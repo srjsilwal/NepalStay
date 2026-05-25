@@ -66,6 +66,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Defensive check: ensure booking is unpaid before issuing invoice
+    if (booking.paymentStatus === "PAID" || booking.paidAt) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Cannot issue invoice for a booking that is already paid",
+        },
+        { status: 400 },
+      );
+    }
+
     const invoiceNumber = generateInvoiceNumber(bookingId, booking.totalPrice);
 
     const isOnlinePayment =
