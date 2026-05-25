@@ -166,10 +166,8 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {[
               { href: "/admin/hotels",    icon: Building2,             label: "Hotel Approvals",  sub: `${stats.pendingHotels} pending` },
-              { href: "/admin/invoices",  icon: FileText,             label: "Cash Invoices",     sub: "Issue payment invoices" },
               { href: "/admin/complaints",icon: MessageSquareWarning,  label: "Complaints",        sub: `${stats.pendingComplaints ?? 0} open` },
               { href: "/admin/fnmis",     icon: Globe,                 label: "FNMIS Reports",     sub: `${stats.fnmisPending} overdue` },
-              { href: "/admin/audit",     icon: FileText,              label: "Audit Report",      sub: "IRD-compliant export" },
             ].map(({ href, icon: Icon, label, sub }) => (
               <Link key={href} href={href}
                 className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group">

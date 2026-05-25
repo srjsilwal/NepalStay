@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { CalendarCheck, RefreshCw, CheckCircle, Loader2, AlertCircle, X, RotateCcw } from "lucide-react";
+import { CalendarCheck, RefreshCw, CheckCircle, Loader2, AlertCircle, X, RotateCcw, FileText } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import BsDateDisplay from "@/components/BsDateDisplay";
 import { useToast } from "@/components/providers/ToastContext";
@@ -316,6 +316,35 @@ export default function VendorBookingsPage() {
     b.refundStatus === "NONE"
   );
 
+  // Show "Issue Invoice" button for cash bookings that are confirmed/checked-in/checked-out and don't have invoice yet
+  const canIssueInvoice = (b: Booking) =>
+    ["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"].includes(b.status) &&
+    !b.invoiceNumber &&
+    b.paymentStatus === "UNPAID" &&
+    !b.paidAt;
+
+  const issueInvoice = async (bookingId: string) => {
+    setWorking(bookingId);
+    try {
+      const res = await fetch("/api/vendor/invoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId }),
+      });
+      const data = await res.json();
+      setWorking(null);
+      if (data.success) {
+        toastSuccess(`Invoice ${data.data.invoiceNumber} issued`);
+        fetchBookings();
+      } else {
+        toastError(data.error || "Failed to issue invoice");
+      }
+    } catch (err) {
+      setWorking(null);
+      toastError("Network error");
+    }
+  };
+
   // Disabled - only vendors process refunds, no admin/staff involvement
  
 
@@ -442,6 +471,13 @@ export default function VendorBookingsPage() {
                             <button onClick={() => setRefundBooking(b)} disabled={working === b.id}
                               className="text-xs px-2.5 py-1.5 bg-green-50 text-green-700 border border-green-200 rounded-lg hover:bg-green-100 font-medium disabled:opacity-50 whitespace-nowrap flex items-center gap-1">
                               <RotateCcw className="w-3 h-3" />Refund
+                            </button>
+                          )}
+                          {canIssueInvoice(b) && (
+                            <button onClick={() => issueInvoice(b.id)} disabled={working === b.id}
+                              className="text-xs px-2.5 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 font-medium disabled:opacity-50 whitespace-nowrap flex items-center gap-1">
+                              {working === b.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <FileText className="w-3 h-3" />}
+                              Invoice
                             </button>
                           )}
                         </div>

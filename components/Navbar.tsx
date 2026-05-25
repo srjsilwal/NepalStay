@@ -28,7 +28,6 @@ import {
   Store,
   MessageSquareWarning,
 } from "lucide-react";
-import { useCalendar } from "@/components/providers/CalendarContext";
 
 const NAV_LINKS = {
   CUSTOMER: [
@@ -57,10 +56,9 @@ const NAV_LINKS = {
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/hotels", label: "Hotels", icon: Building2 },
     { href: "/admin/vendors", label: "Vendors", icon: Store },
-    { href: "/admin/invoices", label: "Invoices", icon: FileText },
+    // Invoices removed from admin navbar per request — handled separately
     { href: "/admin/complaints", label: "Complaints", icon: MessageSquareWarning },
     { href: "/admin/fnmis", label: "FNMIS", icon: Globe },
-    { href: "/admin/audit", label: "Audit", icon: FileText },
     { href: "/stats", label: "Stats", icon: BarChart2 },
   ],
 };
@@ -75,7 +73,6 @@ const ROLE_BADGE: Record<string, string> = {
 export default function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
-  const { isBS, toggleCalendar } = useCalendar();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const role = (session?.user as any)?.role ?? "CUSTOMER";
@@ -98,8 +95,13 @@ export default function Navbar() {
             <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center shadow-sm">
               <Hotel className="w-4 h-4 text-white" />
             </div>
+            {/* Show simplified admin branding when role is ADMIN per request */}
             <span className="font-bold text-slate-800 text-lg tracking-tight">
-              Nepal<span className="text-amber-500">Stay</span>
+              {role === "ADMIN" ? (
+                <span className="text-amber-500">Admin</span>
+              ) : (
+                <>Nepal<span className="text-amber-500">Stay</span></>
+              )}
             </span>
           </Link>
 
@@ -153,20 +155,6 @@ export default function Navbar() {
 
         {/* ── Right side ───────────────────────────────────────────────── */}
   <div className="flex items-center space-x-3 md:space-x-4">
-          {/* BS/AD calendar toggle — visible to everyone */}
-          <button
-            onClick={toggleCalendar}
-            title={isBS ? "Switch to AD" : "Switch to BS (Bikram Sambat)"}
-            className={`hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-              isBS
-                ? "bg-amber-500 text-white border-amber-500"
-                : "bg-white text-slate-600 border-slate-200 hover:border-amber-400 hover:text-amber-600"
-            }`}
-          >
-            <span>{isBS ? "BS" : "AD"}</span>
-            <span className="opacity-50">|</span>
-            <span>{isBS ? "AD" : "BS"}</span>
-          </button>
 
           {session?.user ? (
             /* ── Logged-in right side ──────────────────────────────────── */
@@ -290,16 +278,6 @@ export default function Navbar() {
             )}
 
             <div className="border-t border-slate-100 pt-2 mt-2">
-              {/* BS/AD toggle in mobile */}
-              <button
-                onClick={toggleCalendar}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 w-full"
-              >
-                <Globe className="w-4 h-4" />
-                Calendar:{" "}
-                <strong>{isBS ? "Bikram Sambat" : "Gregorian"}</strong>
-              </button>
-
               {session?.user ? (
                 <button
                   onClick={() => signOut({ callbackUrl: "/hotels" })}
