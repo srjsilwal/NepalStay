@@ -50,7 +50,7 @@ async function main() {
     where:  { email: "admin@nepalstay.com" },
     update: {},
     create: {
-      name:        "Admin NepalStay",
+      name:        "NepalStay",
       email:       "admin@nepalstay.com",
       password:    adminPassword,
       role:        "ADMIN",
