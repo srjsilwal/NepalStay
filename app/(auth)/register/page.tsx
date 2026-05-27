@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -46,11 +46,21 @@ export default function RegisterPage() {
   const [error, setError]   = useState("");
   const [success, setSuccess] = useState(false);
 
-  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } =
-    useForm<Form>({ resolver: zodResolver(schema), defaultValues: { role: "CUSTOMER" } });
+  const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } =
+    useForm<Form>({ 
+      resolver: zodResolver(schema), 
+      defaultValues: { role: "CUSTOMER", nationality: undefined } 
+    });
 
   const selectedRole = watch("role");
   const selectedNationality = watch("nationality");
+
+  // When role changes to VENDOR, set nationality to NEPALI
+  useEffect(() => {
+    if (selectedRole === "VENDOR") {
+      setValue("nationality", "NEPALI");
+    }
+  }, [selectedRole, setValue]);
 
   const onSubmit = async (data: Form) => {
     setError("");
@@ -189,9 +199,11 @@ export default function RegisterPage() {
                   </>
                 )}
 
-                {/* For Hotel Owners - Default to NEPALI */}
-                {selectedRole === "VENDOR" && (
-                  <input {...register("nationality")} type="hidden" value="NEPALI" />
+                {/* For Hotel Owners - Nationality automatically set to NEPALI */}
+                {selectedRole === "VENDOR" && selectedNationality === "NEPALI" && (
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+                    ✓ Your nationality is set to Nepali as required for hotel owners
+                  </div>
                 )}
 
                 <div>
