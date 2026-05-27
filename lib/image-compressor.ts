@@ -13,11 +13,11 @@ export async function compressImage(
     reader.readAsDataURL(file);
     
     reader.onerror = () => {
-      resolve(new Blob([file], { type: "image/jpeg" }));
+      resolve(new Blob([file], { type: file.type }));
     };
     
     reader.onabort = () => {
-      resolve(new Blob([file], { type: "image/jpeg" }));
+      resolve(new Blob([file], { type: file.type }));
     };
     
     reader.onload = (event) => {
@@ -25,7 +25,7 @@ export async function compressImage(
       img.src = event.target?.result as string;
       
       img.onerror = () => {
-        resolve(new Blob([file], { type: "image/jpeg" }));
+        resolve(new Blob([file], { type: file.type }));
       };
       
       img.onload = () => {
@@ -42,7 +42,7 @@ export async function compressImage(
           canvas.height = height;
           const ctx = canvas.getContext("2d");
           if (ctx === null) {
-            resolve(new Blob([file], { type: "image/jpeg" }));
+            resolve(new Blob([file], { type: file.type }));
             return;
           }
           ctx.drawImage(img, 0, 0, width, height);
@@ -59,10 +59,10 @@ export async function compressImage(
                     resolve(blob);
                   }
                 } else {
-                  resolve(new Blob([file], { type: "image/jpeg" }));
+                  resolve(new Blob([file], { type: file.type }));
                 }
               } catch {
-                resolve(new Blob([file], { type: "image/jpeg" }));
+                resolve(new Blob([file], { type: file.type }));
               }
             },
             "image/jpeg",

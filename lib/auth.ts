@@ -112,7 +112,21 @@ export const authOptions: NextAuthOptions = {
       if (url === baseUrl || url === baseUrl + "/") {
         return baseUrl + "/hotels";
       }
-      return url.startsWith(baseUrl) ? url : baseUrl + "/hotels";
+      
+      // Strict origin validation to prevent open redirects
+      try {
+        const parsedUrl = new URL(url, baseUrl);
+        const parsedBase = new URL(baseUrl);
+        
+        // Only allow same-origin redirects
+        if (parsedUrl.origin === parsedBase.origin) {
+          return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+        }
+      } catch {
+        // Invalid URL, fall through to default
+      }
+      
+      return baseUrl + "/hotels";
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
