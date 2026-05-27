@@ -29,6 +29,7 @@ export default function HotelImageUploader({
       const err = `Can only upload ${maxImages - currentImageCount} more image(s)`;
       toastError(err);
       onError?.(err);
+      e.target.value = "";
       return;
     }
 

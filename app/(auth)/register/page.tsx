@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,9 +44,31 @@ type Form = z.infer<typeof schema>;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [showPw, setShowPw] = useState(false);
   const [error, setError]   = useState("");
   const [success, setSuccess] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      const role = (session.user as any).role;
+      // Redirect to appropriate dashboard based on role
+      switch (role) {
+        case "ADMIN":
+          router.push("/admin");
+          break;
+        case "VENDOR":
+          router.push("/vendor");
+          break;
+        case "STAFF":
+          router.push("/staff");
+          break;
+        default:
+          router.push("/customer/profile");
+      }
+    }
+  }, [status, session, router]);
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } =
     useForm<Form>({ 
@@ -56,10 +79,12 @@ export default function RegisterPage() {
   const selectedRole = watch("role");
   const selectedNationality = watch("nationality");
 
-  // When role changes to VENDOR, set nationality to NEPALI
+  // When role changes to VENDOR, set nationality to NEPALI and clear PII fields
   useEffect(() => {
     if (selectedRole === "VENDOR") {
       setValue("nationality", "NEPALI");
+      setValue("passportNumber", "");
+      setValue("purposeOfVisit", "");
     }
   }, [selectedRole, setValue]);
 

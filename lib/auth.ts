@@ -107,6 +107,13 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Redirect to home after sign out
+      if (url === baseUrl || url === baseUrl + "/") {
+        return baseUrl + "/hotels";
+      }
+      return url.startsWith(baseUrl) ? url : baseUrl + "/hotels";
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
