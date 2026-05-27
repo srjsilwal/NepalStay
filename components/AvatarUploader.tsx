@@ -40,7 +40,7 @@ export default function AvatarUploader({ currentAvatar, name, size = "md", onUpl
         )}
       </div>
 
-      {/* Upload button — using UploadButton component for reliability */}
+      {/* Upload button — using UploadButton component */}
       <UploadButton
         endpoint="userAvatar"
         onUploadBegin={() => { setUploading(true); setError(""); }}

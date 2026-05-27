@@ -45,7 +45,7 @@ const NAV_LINKS = {
     { href: "/vendor/rooms", label: "Rooms", icon: BedDouble },
     { href: "/vendor/bookings", label: "Bookings", icon: CalendarCheck },
     { href: "/vendor/analytics", label: "Analytics", icon: TrendingUp },
-    { href: "/vendor/pms", label: "PMS", icon: Map },
+    { href: "/vendor/invoices", label: "Invoices", icon: FileText },
     { href: "/vendor/reviews", label: "Reviews", icon: Star },
   ],
   STAFF: [
@@ -74,9 +74,24 @@ export default function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const role = (session?.user as any)?.role ?? "CUSTOMER";
   const links = NAV_LINKS[role as keyof typeof NAV_LINKS] ?? NAV_LINKS.CUSTOMER;
+
+  // Determine profile link based on role
+  const getProfileLink = () => {
+    switch (role) {
+      case "VENDOR":
+        return "/vendor/profile";
+      case "ADMIN":
+        return "/admin/profile";
+      case "STAFF":
+        return "/staff/profile";
+      default:
+        return "/customer/profile";
+    }
+  };
 
   const isActive = (href: string) =>
     href === "/hotels"
@@ -154,43 +169,69 @@ export default function Navbar() {
         </div>
 
         {/* ── Right side ───────────────────────────────────────────────── */}
-  <div className="flex items-center space-x-3 md:space-x-4">
+  <div className="flex items-center space-x-3 md:space-x-4 relative">
 
           {session?.user ? (
             /* ── Logged-in right side ──────────────────────────────────── */
             <>
-              <div className="hidden sm:flex items-center space-x-3 ml-1">
-                {(session.user as any).avatar ? (
-                  <Image
-                    src={(session.user as any).avatar}
-                    alt={session.user.name ?? ""}
-                    width={32}
-                    height={32}
-                    className="w-8 h-8 rounded-full object-cover border-2 border-amber-100"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-sm font-bold text-amber-700">
-                    {session.user.name?.[0]?.toUpperCase()}
+              <div className="relative">
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="hidden sm:flex items-center space-x-3 ml-1 hover:opacity-70 transition-opacity"
+                >
+                  {(session.user as any).avatar ? (
+                    <Image
+                      src={(session.user as any).avatar}
+                      alt={session.user.name ?? ""}
+                      width={32}
+                      height={32}
+                      className="w-8 h-8 rounded-full object-cover border-2 border-amber-100"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-sm font-bold text-amber-700">
+                      {session.user.name?.[0]?.toUpperCase()}
+                    </div>
+                  )}
+                  <div className="hidden md:block">
+                    <p className="text-sm font-medium text-slate-800 leading-tight">
+                      {session.user.name}
+                    </p>
+                    <span
+                      className={`text-xs font-medium px-1.5 py-0.5 rounded inline-block ${ROLE_BADGE[role]}`}
+                    >
+                      {role}
+                    </span>
+                  </div>
+                </button>
+
+                {/* Profile dropdown */}
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl border border-slate-200 shadow-lg z-50">
+                    <Link
+                      href={getProfileLink()}
+                      onClick={() => setProfileOpen(false)}
+                      className="block px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-t-xl border-b border-slate-100"
+                    >
+                      View Profile
+                    </Link>
+                    <button
+                      onClick={() => {
+                        signOut({ callbackUrl: "/hotels" });
+                        setProfileOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-b-xl"
+                    >
+                      Sign out
+                    </button>
                   </div>
                 )}
-                <div className="hidden md:block">
-                  <p className="text-sm font-medium text-slate-800 leading-tight">
-                    {session.user.name}
-                  </p>
-                  <span
-                    className={`text-xs font-medium px-1.5 py-0.5 rounded inline-block ${ROLE_BADGE[role]}`}
-                  >
-                    {role}
-                  </span>
-                </div>
               </div>
 
               <button
                 onClick={() => signOut({ callbackUrl: "/hotels" })}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-2 text-sm text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-2 text-sm text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors md:hidden"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden md:inline">Sign out</span>
               </button>
             </>
           ) : (
