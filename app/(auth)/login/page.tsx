@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -21,8 +21,30 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [showPw, setShowPw] = useState(false);
   const [error, setError]   = useState("");
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      const role = (session.user as any).role;
+      // Redirect to appropriate dashboard based on role
+      switch (role) {
+        case "ADMIN":
+          router.push("/admin");
+          break;
+        case "VENDOR":
+          router.push("/vendor");
+          break;
+        case "STAFF":
+          router.push("/staff");
+          break;
+        default:
+          router.push("/customer/profile");
+      }
+    }
+  }, [status, session, router]);
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } =
     useForm<Form>({ resolver: zodResolver(schema) });

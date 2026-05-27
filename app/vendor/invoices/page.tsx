@@ -41,7 +41,7 @@ export default function VendorInvoicesPage() {
       if (data.success) {
         // Filter for cash bookings without invoices
         const cashBookings = data.data.filter(
-          (b: any) => !b.paidAt && ["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"].includes(b.status)
+          (b: any) => !b.paidAt && ["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"].includes(b.status) && b.paymentMethod === "CASH"
         );
         setBookings(cashBookings);
       } else {
@@ -104,7 +104,7 @@ export default function VendorInvoicesPage() {
           </div>
         )}
 
-        {bookings.length > 0 && (
+        {(loading || bookings.length > 0) && (
           <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

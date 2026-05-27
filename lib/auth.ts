@@ -107,6 +107,27 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Redirect to home after sign out
+      if (url === baseUrl || url === baseUrl + "/") {
+        return baseUrl + "/hotels";
+      }
+      
+      // Strict origin validation to prevent open redirects
+      try {
+        const parsedUrl = new URL(url, baseUrl);
+        const parsedBase = new URL(baseUrl);
+        
+        // Only allow same-origin redirects
+        if (parsedUrl.origin === parsedBase.origin) {
+          return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+        }
+      } catch {
+        // Invalid URL, fall through to default
+      }
+      
+      return baseUrl + "/hotels";
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

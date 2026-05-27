@@ -29,6 +29,7 @@ export default function HotelImageUploader({
       const err = `Can only upload ${maxImages - currentImageCount} more image(s)`;
       toastError(err);
       onError?.(err);
+      e.target.value = "";
       return;
     }
 
@@ -36,7 +37,9 @@ export default function HotelImageUploader({
     try {
       for (const file of files) {
         const { blob, originalSize, compressedSize } = await compressImageWithInfo(file, 4);
-        const compressedFile = new File([blob], file.name, { type: "image/jpeg" });
+        // Note: blob is guaranteed to be image/jpeg from canvas.toBlob() success path,
+        // or original type from fallback handlers
+        const compressedFile = new File([blob], file.name, { type: blob.type });
 
         const formData = new FormData();
         formData.append("files", compressedFile);

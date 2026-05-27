@@ -11,9 +11,23 @@ export async function compressImage(
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
+    
+    reader.onerror = () => {
+      resolve(new Blob([file], { type: file.type }));
+    };
+    
+    reader.onabort = () => {
+      resolve(new Blob([file], { type: file.type }));
+    };
+    
     reader.onload = (event) => {
       const img = new Image();
       img.src = event.target?.result as string;
+      
+      img.onerror = () => {
+        resolve(new Blob([file], { type: file.type }));
+      };
+      
       img.onload = () => {
         const canvas = document.createElement("canvas");
         let { width, height } = img;
@@ -27,10 +41,14 @@ export async function compressImage(
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext("2d");
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            canvas.toBlob(
-              (blob) => {
+          if (ctx === null) {
+            resolve(new Blob([file], { type: file.type }));
+            return;
+          }
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => {
+              try {
                 if (blob) {
                   const sizeMB = blob.size / 1024 / 1024;
                   if (sizeMB > maxSizeMB && quality > 0.1 && attempts < maxAttempts) {
@@ -41,13 +59,15 @@ export async function compressImage(
                     resolve(blob);
                   }
                 } else {
-                  resolve(new Blob([file], { type: "image/jpeg" }));
+                  resolve(new Blob([file], { type: file.type }));
                 }
-              },
-              "image/jpeg",
-              quality
-            );
-          }
+              } catch {
+                resolve(new Blob([file], { type: file.type }));
+              }
+            },
+            "image/jpeg",
+            quality
+          );
         };
 
         compressWithQuality();
