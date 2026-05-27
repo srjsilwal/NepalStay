@@ -144,6 +144,62 @@ const CITY_HIGHLIGHTS: Record<string, string[]> = {
   ],
 };
 
+// Daily activity suggestions per city
+const DAILY_TODOS: Record<string, Record<string, { day: number; activity: string; category: string; eats?: string; specialty?: string }[]>> = {
+  Kathmandu: {
+    day1: [
+      { day: 1, activity: "Morning: Swayambhunath Temple sunrise & monkey sighting", category: "Visit", specialty: "Famous for 360° valley views" },
+      { day: 1, activity: "Lunch: Try Newari cuisine at a local restaurant", category: "Eat", eats: "Juju Dhau, Yomari, Bara" },
+      { day: 1, activity: "Afternoon: Boudhanath Stupa circumambulation", category: "Visit", specialty: "UNESCO site, one of world's largest stupas" },
+      { day: 1, activity: "Evening: Thamel district exploration & shopping", category: "Explore", specialty: "Tourist hub with vibrant nightlife" },
+    ],
+    day2: [
+      { day: 2, activity: "Early morning: Pashupatinath Temple visit", category: "Visit", specialty: "Sacred Hindu pilgrimage site on Bagmati River" },
+      { day: 2, activity: "Lunch: Try Momo at a local vendor", category: "Eat", eats: "Chicken Momo, Vegetable Momo" },
+      { day: 2, activity: "Afternoon: Kathmandu Durbar Square & surrounding temples", category: "Visit", specialty: "Ancient royal palace & temples" },
+      { day: 2, activity: "Evening: Sunset at Nagarkot nearby (optional day trip)", category: "Adventure", specialty: "Himalayan views" },
+    ],
+  },
+  Pokhara: {
+    day1: [
+      { day: 1, activity: "Morning: Sunrise at Sarangkot viewpoint", category: "Adventure", specialty: "Best sunrise view in Pokhara, paragliding launch point" },
+      { day: 1, activity: "Breakfast: Local cafe with lake views", category: "Eat", eats: "Pancakes, fresh juice, local bread" },
+      { day: 1, activity: "Afternoon: Phewa Lake boat ride with Fishtail Mountain view", category: "Visit", specialty: "Most iconic lake in Nepal" },
+      { day: 1, activity: "Evening: Waterfront promenade walk & dinner", category: "Relax", specialty: "Stunning mountain backdrop" },
+    ],
+    day2: [
+      { day: 2, activity: "Morning: World Peace Pagoda climb (30-45 min hike)", category: "Hike", specialty: "Serene white pagoda with panoramic views" },
+      { day: 2, activity: "Lunch: Lakeside restaurant - fish or vegetarian", category: "Eat", eats: "Fresh fish curry, Dal Bhat" },
+      { day: 2, activity: "Afternoon: Davis Falls & Gupteshwor Cave tour", category: "Visit", specialty: "Underground waterfall & sacred cave" },
+      { day: 2, activity: "Evening: Optional paragliding experience", category: "Adventure", specialty: "World-famous paragliding destination" },
+    ],
+  },
+  Chitwan: {
+    day1: [
+      { day: 1, activity: "Early morning: Jeep/Elephant jungle safari", category: "Adventure", specialty: "Spot Bengal tigers, rhinos, crocodiles" },
+      { day: 1, activity: "Breakfast: Hotel meal", category: "Eat", eats: "Jungle lodge breakfast" },
+      { day: 1, activity: "Afternoon: Rapti River canoe safari", category: "Adventure", specialty: "Glide silently spotting birds & crocodiles" },
+      { day: 1, activity: "Evening: Tharu cultural show & dinner", category: "Cultural", specialty: "Indigenous dance & traditional food" },
+    ],
+  },
+  Lumbini: {
+    day1: [
+      { day: 1, activity: "Morning: Sacred Garden & Maya Devi Temple visit", category: "Pilgrimage", specialty: "Birthplace of Buddha - UNESCO site" },
+      { day: 1, activity: "Lunch: Local vegetarian restaurant", category: "Eat", eats: "Vegetarian set meals, local produce" },
+      { day: 1, activity: "Afternoon: International monasteries tour", category: "Cultural", specialty: "Thai, Chinese, Japanese monasteries" },
+      { day: 1, activity: "Evening: Meditation at temple", category: "Spiritual", specialty: "Peaceful evening ritual" },
+    ],
+  },
+  Nagarkot: {
+    day1: [
+      { day: 1, activity: "Early morning: Himalayan sunrise viewing (5-6 AM)", category: "Adventure", specialty: "View Mt. Everest on clear days" },
+      { day: 1, activity: "Breakfast: Hotel meal with views", category: "Eat", eats: "Continental breakfast" },
+      { day: 1, activity: "Day: Hiking trails around Nagarkot", category: "Hike", specialty: "10km ridge walk with valley views" },
+      { day: 1, activity: "Evening: Sunset viewing & bonfire", category: "Relax", specialty: "Golden hour mountain views" },
+    ],
+  },
+};
+
 export async function POST(req: NextRequest) {
   try {
     const {
@@ -268,6 +324,27 @@ export async function POST(req: NextRequest) {
             "Check local transport"
           : null;
 
+        // Generate daily todos for each day in this stop
+        const dailyTodos = [];
+        const cityTodos = DAILY_TODOS[city] || {};
+        for (let d = 1; d <= nights; d++) {
+          const dayKey = `day${d}`;
+          if (cityTodos[dayKey]) {
+            dailyTodos.push(...cityTodos[dayKey]);
+          } else if (d === 1 && cityTodos.day1) {
+            // Use day1 template for additional nights
+            dailyTodos.push(...cityTodos.day1.map(t => ({ ...t, day: d })));
+          } else {
+            // Fallback: generic day suggestion
+            dailyTodos.push({
+              day: d,
+              activity: `Explore ${city} - visit local markets and restaurants`,
+              category: "Explore",
+              specialty: `Day ${d} exploration of ${city}`,
+            });
+          }
+        }
+
         return {
           city,
           nights,
@@ -278,6 +355,7 @@ export async function POST(req: NextRequest) {
           travelFromPrevious: travelInfo,
           estimatedCostPerNight: estimatedPricePerNight,
           estimatedStopTotal: estimatedPricePerNight * nights,
+          dailyTodos,
         };
       }),
     );

@@ -4,25 +4,25 @@ export const TIERS = {
     min: 0,
     label: "Bronze",
     color: "#CD7F32",
-    perks: "1 point per NPR 100",
+    perks: "1 point per NPR 100 spent",
   },
   SILVER: {
     min: 500,
     label: "Silver",
     color: "#C0C0C0",
-    perks: "1.5x points + priority support",
+    perks: "1.5x points + Priority email support + Early access to sales",
   },
   GOLD: {
     min: 2000,
     label: "Gold",
     color: "#FFD700",
-    perks: "2x points + free room upgrade request",
+    perks: "2x points + Free room upgrade (subject to availability) + 15% off on stays + Free WiFi",
   },
   PLATINUM: {
     min: 5000,
     label: "Platinum",
     color: "#E5E4E2",
-    perks: "3x points + complimentary breakfast",
+    perks: "3x points + Complimentary breakfast + Free room upgrade + 20% discount + Free late checkout (2pm) + 24/7 concierge + Airport transfers + Exclusive rates",
   },
 };
 

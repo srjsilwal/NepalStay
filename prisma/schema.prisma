@@ -96,6 +96,7 @@ model User {
   
   // User Profile
   nationality       String   @default("NEPALI")  // NEPALI | FOREIGN
+  country           String?  // Country name for foreign nationals
   passportNumber    String?  // Only for foreign nationals
   purposeOfVisit    String?  // For foreign tourists (LEISURE, BUSINESS, etc)
   

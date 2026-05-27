@@ -130,7 +130,7 @@ export default function CustomerComplaintsPage() {
                   Select Your Booking <span className="text-red-500">*</span>
                 </label>
                 {bookings.length === 0 ? (
-                  <p className="text-sm text-slate-400 italic">No confirmed bookings found. You must have a booking with a hotel to file a complaint.</p>
+                  <p className="text-sm text-slate-400 italic">No bookings found yet.</p>
                 ) : (
                   <select
                     value={form.bookingId}
@@ -139,7 +139,7 @@ export default function CustomerComplaintsPage() {
                     <option value="">— Choose a booking —</option>
                     {bookings.map(b => (
                       <option key={b.id} value={b.id}>
-                        {b.hotel.name}, {b.hotel.city} · Check-in: {new Date(b.checkIn).toLocaleDateString()}
+                        {b.hotel.name}, {b.hotel.city} · Checked out: {new Date(b.checkOut).toLocaleDateString()}
                       </option>
                     ))}
                   </select>

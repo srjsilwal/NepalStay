@@ -13,6 +13,7 @@ const schema = z
     phone: z.string().optional(),
     role: z.enum(["CUSTOMER", "VENDOR"]).default("CUSTOMER"),
     nationality: z.enum(["NEPALI", "FOREIGN"]).default("NEPALI"),
+    country: z.string().optional(), // Country name for foreign nationals
     passportNumber: z.string().optional(),
     purposeOfVisit: z.string().optional(),
   })
@@ -25,6 +26,13 @@ const schema = z
         code: z.ZodIssueCode.custom,
         path: ["passportNumber"],
         message: "Passport number is required for foreign nationals",
+      });
+    }
+    if (data.nationality === "FOREIGN" && (!data.country || data.country.trim() === "")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["country"],
+        message: "Country is required for foreign nationals",
       });
     }
   });
@@ -40,7 +48,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, password, phone, role, nationality, passportNumber, purposeOfVisit } = parsed.data;
+    const { name, email, password, phone, role, nationality, country, passportNumber, purposeOfVisit } = parsed.data;
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
@@ -59,6 +67,7 @@ export async function POST(req: NextRequest) {
         phone,
         role,
         nationality,
+        country: nationality === "FOREIGN" ? country : null,
         passportNumber: nationality === "FOREIGN" ? passportNumber : null,
         purposeOfVisit: nationality === "FOREIGN" ? purposeOfVisit : null,
       },

@@ -157,6 +157,36 @@ function TimelineStop({ stop, index, isLast }: { stop: ItineraryStop; index: num
           )}
         </div>
 
+        {/* Daily Todos */}
+        {(stop as any).dailyTodos?.length > 0 && (
+          <div className="bg-gradient-to-br from-blue-50 to-blue-25 border border-blue-100 rounded-2xl p-5 mb-4">
+            <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-3">📋 Daily Itinerary</p>
+            <div className="space-y-2.5">
+              {(stop as any).dailyTodos.map((todo: any, idx: number) => (
+                <div key={idx} className="flex gap-3 bg-white rounded-xl p-3 border border-blue-50">
+                  <div className="flex-shrink-0">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+                      {todo.day}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-800">{todo.activity}</p>
+                    {todo.specialty && (
+                      <p className="text-xs text-slate-500 mt-0.5 leading-tight">✨ {todo.specialty}</p>
+                    )}
+                    {todo.eats && (
+                      <p className="text-xs text-orange-600 mt-0.5">🍲 Try: {todo.eats}</p>
+                    )}
+                    <span className="inline-block mt-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                      {todo.category}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Hotel suggestions */}
         {stop.suggestedHotels.length > 0 ? (
           <div>

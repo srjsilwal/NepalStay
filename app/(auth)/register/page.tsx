@@ -15,6 +15,7 @@ const schema = z.object({
   confirmPassword: z.string(),
   role:            z.enum(["CUSTOMER", "VENDOR"]),
   nationality:     z.enum(["NEPALI", "FOREIGN"]).optional(),
+  country:         z.string().optional(), // Country name for foreign nationals
   passportNumber:  z.string().optional(),
   purposeOfVisit:  z.string().optional(),
 }).refine((d) => d.password === d.confirmPassword, {
@@ -29,9 +30,9 @@ const schema = z.object({
   if (d.role === "VENDOR" && d.nationality === "FOREIGN") {
     return false;
   }
-  // If FOREIGN, both passport and purpose are required
+  // If FOREIGN, country, passport and purpose are required
   if (d.nationality === "FOREIGN") {
-    return d.passportNumber && d.passportNumber.length >= 6 && d.purposeOfVisit;
+    return d.country && d.passportNumber && d.passportNumber.length >= 6 && d.purposeOfVisit;
   }
   return true;
 }, {
@@ -173,28 +174,33 @@ export default function RegisterPage() {
 
                     {/* Passport Number for Foreign Travellers */}
                     {selectedNationality === "FOREIGN" && (
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Passport Number *</label>
-                        <input {...register("passportNumber")} type="text" placeholder="e.g., AB123456" className={inputCls} />
-                        {errors.passportNumber && <p className="mt-1 text-xs text-red-600">{errors.passportNumber.message}</p>}
-                      </div>
-                    )}
+                      <>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Country of Residence *</label>
+                          <input {...register("country")} type="text" placeholder="e.g., United States, India, Australia" className={inputCls} />
+                          {errors.country && <p className="mt-1 text-xs text-red-600">{errors.country.message}</p>}
+                        </div>
 
-                    {/* Purpose of Visit for Foreign Travellers */}
-                    {selectedNationality === "FOREIGN" && (
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Purpose of Visit *</label>
-                        <select {...register("purposeOfVisit")} className={inputCls}>
-                          <option value="">Select purpose...</option>
-                          <option value="LEISURE">Leisure/Tourism</option>
-                          <option value="BUSINESS">Business</option>
-                          <option value="EDUCATION">Education</option>
-                          <option value="MEDICAL">Medical Treatment</option>
-                          <option value="TRANSIT">Transit</option>
-                          <option value="OTHER">Other</option>
-                        </select>
-                        {errors.purposeOfVisit && <p className="mt-1 text-xs text-red-600">{errors.purposeOfVisit.message}</p>}
-                      </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Passport Number *</label>
+                          <input {...register("passportNumber")} type="text" placeholder="e.g., AB123456" className={inputCls} />
+                          {errors.passportNumber && <p className="mt-1 text-xs text-red-600">{errors.passportNumber.message}</p>}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Purpose of Visit *</label>
+                          <select {...register("purposeOfVisit")} className={inputCls}>
+                            <option value="">Select purpose...</option>
+                            <option value="LEISURE">Leisure/Tourism</option>
+                            <option value="BUSINESS">Business</option>
+                            <option value="EDUCATION">Education</option>
+                            <option value="MEDICAL">Medical Treatment</option>
+                            <option value="TRANSIT">Transit</option>
+                            <option value="OTHER">Other</option>
+                          </select>
+                          {errors.purposeOfVisit && <p className="mt-1 text-xs text-red-600">{errors.purposeOfVisit.message}</p>}
+                        </div>
+                      </>
                     )}
                   </>
                 )}

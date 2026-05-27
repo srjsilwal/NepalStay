@@ -245,15 +245,10 @@ export default function BookingModal({ room, hotel, onClose, onSuccess }: Props)
               )}
 
               {/* Calendar mode indicator */}
-              <div className="flex items-center gap-2 text-xs text-slate-500">
-                <Calendar className="w-3.5 h-3.5" />
-                Entering dates in{" "}
-                <span
-                  className={`font-semibold px-1.5 py-0.5 rounded ${isBS ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"}`}
-                >
-                  {isBS ? "Bikram Sambat (BS)" : "Gregorian (AD)"}
+              <div className="flex items-center gap-2 text-xs">
+                <span className={`font-medium px-2.5 py-1 rounded-lg ${isBS ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"}`}>
+                  {isBS ? "BS (Bikram Sambat)" : "AD (Gregorian)"}
                 </span>
-                — toggle in navbar
               </div>
 
               {/* Dates */}
@@ -281,45 +276,57 @@ export default function BookingModal({ room, hotel, onClose, onSuccess }: Props)
                   />
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
-                      Check-in
-                    </label>
-                    <input
-                      type="date"
-                      min={format(today, "yyyy-MM-dd")}
-                      value={toInputVal(checkInDate)}
-                      onChange={(e) => {
-                        const d = e.target.value
-                          ? new Date(e.target.value)
-                          : null;
-                        setCheckInDate(d);
-                        if (checkOutDate && d && d >= checkOutDate)
-                          setCheckOutDate(null);
-                      }}
-                      className={inputCls}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
-                      Check-out
-                    </label>
-                    <input
-                      type="date"
-                      min={
-                        checkInDate
-                          ? format(addDays(checkInDate, 1), "yyyy-MM-dd")
-                          : format(addDays(today, 1), "yyyy-MM-dd")
-                      }
-                      value={toInputVal(checkOutDate)}
-                      onChange={(e) =>
-                        setCheckOutDate(
-                          e.target.value ? new Date(e.target.value) : null,
-                        )
-                      }
-                      className={inputCls}
-                    />
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+                        Check-in
+                      </label>
+                      <input
+                        type="date"
+                        min={format(today, "yyyy-MM-dd")}
+                        value={toInputVal(checkInDate)}
+                        onChange={(e) => {
+                          const d = e.target.value
+                            ? new Date(e.target.value)
+                            : null;
+                          setCheckInDate(d);
+                          if (checkOutDate && d && d >= checkOutDate)
+                            setCheckOutDate(null);
+                        }}
+                        className={inputCls}
+                      />
+                      {checkInDate && (
+                        <p className="text-xs text-slate-400 mt-1">
+                          BS: {formatBS(adToBS(checkInDate))}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+                        Check-out
+                      </label>
+                      <input
+                        type="date"
+                        min={
+                          checkInDate
+                            ? format(addDays(checkInDate, 1), "yyyy-MM-dd")
+                            : format(addDays(today, 1), "yyyy-MM-dd")
+                        }
+                        value={toInputVal(checkOutDate)}
+                        onChange={(e) =>
+                          setCheckOutDate(
+                            e.target.value ? new Date(e.target.value) : null,
+                          )
+                        }
+                        className={inputCls}
+                      />
+                      {checkOutDate && (
+                        <p className="text-xs text-slate-400 mt-1">
+                          BS: {formatBS(adToBS(checkOutDate))}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

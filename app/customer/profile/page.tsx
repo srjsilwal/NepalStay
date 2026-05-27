@@ -167,7 +167,13 @@ export default function ProfilePage() {
               </label>
               <input
                 type="text"
-                value={user?.nationality === "FOREIGN" ? "Foreign Tourist" : "Nepali Citizen"}
+                value={
+                  user?.nationality === "NEPALI" 
+                    ? "Nepali Citizen" 
+                    : user?.country 
+                      ? `${user.country} (Foreign Tourist)`
+                      : "AMERICAN"
+                }
                 disabled
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 text-slate-600"
               />
@@ -202,7 +208,7 @@ export default function ProfilePage() {
                 </label>
                 <input
                   type="text"
-                  value={user?.purposeOfVisit ?? ""}
+                  value={user?.purposeOfVisit ?? "Tourism"}
                   disabled
                   className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 text-slate-600"
                 />
