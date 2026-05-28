@@ -7,6 +7,7 @@ import {
 import Navbar from "@/components/Navbar";
 import BsDateDisplay from "@/components/BsDateDisplay";
 import { useToast } from "@/components/providers/ToastContext";
+import { useRealtimeRefresh } from "@/components/shared/hooks/useRealtimeRefresh";
 import Link from "next/link";
 
 type Booking = {
@@ -58,6 +59,7 @@ export default function CustomerBookingsPage() {
   };
 
   useEffect(() => { fetchBookings(); }, []);
+  useRealtimeRefresh(fetchBookings);
 
   const handleCancel = async (id: string, hasPaid: boolean) => {
     setConfirmCancel(null);

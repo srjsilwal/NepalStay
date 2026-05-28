@@ -4,6 +4,7 @@ import { CalendarCheck, RefreshCw, CheckCircle, Loader2, AlertCircle, X, RotateC
 import Navbar from "@/components/Navbar";
 import BsDateDisplay from "@/components/BsDateDisplay";
 import { useToast } from "@/components/providers/ToastContext";
+import { useRealtimeRefresh } from "@/components/shared/hooks/useRealtimeRefresh";
 
 type Booking = {
   id: string; status: string; checkIn: string; checkOut: string;
@@ -244,6 +245,7 @@ export default function VendorBookingsPage() {
   }, [filter]);
 
   useEffect(() => { fetchBookings(); }, [fetchBookings]);
+  useRealtimeRefresh(fetchBookings);
 
   const updateStatus = async (id: string, status: string) => {
     setWorking(id);

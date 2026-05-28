@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { MessageSquareWarning, Plus, X, AlertTriangle, CheckCircle, Clock, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useToast } from "@/components/providers/ToastContext";
+import { useRealtimeRefresh } from "@/components/shared/hooks/useRealtimeRefresh";
 
 type ComplaintStatus = "OPEN" | "INVESTIGATING" | "RESOLVED" | "DISMISSED";
 
@@ -21,6 +22,7 @@ type Booking = {
   status: string;
   hotel: { id: string; name: string; city: string };
   checkIn: string;
+  checkOut: string;
 };
 
 const STATUS_CONFIG: Record<ComplaintStatus, { label: string; cls: string; icon: React.ElementType }> = {
@@ -57,6 +59,7 @@ export default function CustomerComplaintsPage() {
   };
 
   useEffect(() => { fetchAll(); }, []);
+  useRealtimeRefresh(fetchAll);
 
   const selectedBooking = bookings.find(b => b.id === form.bookingId);
 

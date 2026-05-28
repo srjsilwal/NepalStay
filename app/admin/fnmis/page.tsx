@@ -6,6 +6,7 @@ import {
 import Navbar from "@/components/Navbar";
 import BsDateDisplay from "@/components/BsDateDisplay";
 import { useToast } from "@/components/providers/ToastContext";
+import { useRealtimeRefresh } from "@/components/shared/hooks/useRealtimeRefresh";
 
 type FnmisBooking = {
   id: string;
@@ -62,6 +63,7 @@ export default function AdminFnmisPage() {
   };
 
   useEffect(() => { fetchData(); }, []);
+  useRealtimeRefresh(fetchData);
 
   const reportFNMIS = async (id: string, guestName: string) => {
     setReporting(id);

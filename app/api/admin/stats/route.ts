@@ -7,6 +7,8 @@ import { startOfMonth, endOfMonth, subMonths } from "date-fns";
 // This route uses session/headers at runtime — force dynamic to avoid prerender
 export const dynamic = 'force-dynamic';
 
+const FNMIS_WINDOW_MS = 24 * 60 * 60 * 1000;
+
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -19,6 +21,7 @@ export async function GET(req: NextRequest) {
     const monthEnd   = endOfMonth(now);
     const lastStart  = startOfMonth(subMonths(now, 1));
     const lastEnd    = endOfMonth(subMonths(now, 1));
+    const fnmisDeadlineCutoff = new Date(now.getTime() - FNMIS_WINDOW_MS);
 
     const [
       totalHotels, pendingHotels, approvedHotels,
@@ -43,7 +46,18 @@ export async function GET(req: NextRequest) {
         _sum: { totalPrice: true },
       }),
       prisma.booking.count({ where: { refundStatus: "PENDING" } }),
-      prisma.booking.count({ where: { fnmisOverdue: true, fnmisReported: false } }),
+      prisma.booking.count({
+        where: {
+          fnmisReported: false,
+          status: { in: ["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"] },
+          user: { nationality: "FOREIGN", passportNumber: { not: null } },
+          OR: [
+            { fnmisOverdue: true },
+            { fnmisDeadline: { lt: now } },
+            { createdAt: { lt: fnmisDeadlineCutoff } },
+          ],
+        },
+      }),
       prisma.complaint.count({ where: { status: { in: ["OPEN", "INVESTIGATING"] } } }),
       prisma.room.groupBy({ by: ["status"], _count: true }),
     ]);

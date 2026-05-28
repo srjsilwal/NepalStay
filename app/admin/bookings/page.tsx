@@ -6,6 +6,7 @@ import {
 import Navbar from "@/components/Navbar";
 import BsDateDisplay from "@/components/BsDateDisplay";
 import { useToast } from "@/components/providers/ToastContext";
+import { useRealtimeRefresh } from "@/components/shared/hooks/useRealtimeRefresh";
 
 type Booking = {
   id: string; status: string; checkIn: string; checkOut: string; totalPrice: number;
@@ -61,6 +62,7 @@ export default function AdminBookingsPage() {
   }, [filter]);
 
   useEffect(() => { fetchBookings(); }, [fetchBookings]);
+  useRealtimeRefresh(fetchBookings);
 
   const issueInvoice = async (id: string) => {
     setWorking(id + "_inv");

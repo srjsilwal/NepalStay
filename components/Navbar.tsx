@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
 import {
-  Hotel,
   LayoutDashboard,
   BedDouble,
   CalendarCheck,
@@ -28,6 +27,7 @@ import {
   Store,
   MessageSquareWarning,
 } from "lucide-react";
+import { useRealtime } from "@/components/providers/RealtimeProvider";
 
 const NAV_LINKS = {
   CUSTOMER: [
@@ -46,6 +46,7 @@ const NAV_LINKS = {
     { href: "/vendor/bookings", label: "Bookings", icon: CalendarCheck },
     { href: "/vendor/analytics", label: "Analytics", icon: TrendingUp },
     { href: "/vendor/invoices", label: "Invoices", icon: FileText },
+    { href: "/vendor/fnmis", label: "FNMIS", icon: Globe },
     { href: "/vendor/reviews", label: "Reviews", icon: Star },
   ],
   STAFF: [
@@ -63,6 +64,27 @@ const NAV_LINKS = {
   ],
 };
 
+const NOTIFICATION_KEYS: Record<string, string> = {
+  "/customer/bookings": "bookings",
+  "/vendor/bookings": "bookings",
+  "/admin/bookings": "bookings",
+  "/vendor/invoices": "invoices",
+  "/admin/invoices": "invoices",
+  "/vendor/fnmis": "fnmis",
+  "/admin/fnmis": "fnmis",
+  "/vendor/reviews": "reviews",
+  "/admin/reviews": "reviews",
+  "/customer/complaints": "complaints",
+  "/admin/complaints": "complaints",
+};
+
+function NotificationDot({ show }: { show: boolean }) {
+  if (!show) return null;
+  return (
+    <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
+  );
+}
+
 const ROLE_BADGE: Record<string, string> = {
   CUSTOMER: "bg-green-100 text-green-700",
   VENDOR: "bg-purple-100 text-purple-700",
@@ -73,6 +95,7 @@ const ROLE_BADGE: Record<string, string> = {
 export default function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const { hasUnread } = useRealtime();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -107,8 +130,15 @@ export default function Navbar() {
             href={session ? "/" : "/hotels"}
             className="flex items-center gap-2"
           >
-            <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center shadow-sm">
-              <Hotel className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-lg overflow-hidden shadow-sm bg-white border border-amber-100">
+              <Image
+                src="/logo.png"
+                alt="NepalStay"
+                width={32}
+                height={32}
+                className="h-full w-full object-cover"
+                priority
+              />
             </div>
             {/* Show simplified admin branding when role is ADMIN per request */}
             <span className="font-bold text-slate-800 text-lg tracking-tight">
@@ -123,11 +153,13 @@ export default function Navbar() {
           {/* Desktop nav (logged in) */}
           {session?.user ? (
             <nav className="hidden md:flex items-center gap-0.5 overflow-x-auto">
-              {links.map(({ href, label, icon: Icon }) => (
+              {links.map(({ href, label, icon: Icon }) => {
+                const unread = hasUnread(NOTIFICATION_KEYS[href] ?? "");
+                return (
                 <Link
                   key={href}
                   href={href}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex-shrink-0 ${
+                  className={`relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex-shrink-0 ${
                     isActive(href)
                       ? "bg-amber-50 text-amber-700"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
@@ -135,8 +167,10 @@ export default function Navbar() {
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
                   {label}
+                  <NotificationDot show={unread} />
                 </Link>
-              ))}
+                );
+              })}
             </nav>
           ) : (
             /* Desktop nav (guest / not logged in) */
@@ -274,12 +308,14 @@ export default function Navbar() {
           <nav className="px-4 py-3 space-y-1">
             {/* Links for logged-in users */}
             {session?.user &&
-              links.map(({ href, label, icon: Icon }) => (
+              links.map(({ href, label, icon: Icon }) => {
+                const unread = hasUnread(NOTIFICATION_KEYS[href] ?? "");
+                return (
                 <Link
                   key={href}
                   href={href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     isActive(href)
                       ? "bg-amber-50 text-amber-700"
                       : "text-slate-700 hover:bg-slate-50"
@@ -287,8 +323,10 @@ export default function Navbar() {
                 >
                   <Icon className="w-4 h-4" />
                   {label}
+                  <NotificationDot show={unread} />
                 </Link>
-              ))}
+                );
+              })}
 
             {/* Links for guests */}
             {!session?.user && (

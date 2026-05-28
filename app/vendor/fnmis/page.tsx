@@ -4,6 +4,7 @@ import { Globe, Clock, CheckCircle, AlertTriangle, RefreshCw, Loader2 } from "lu
 import Navbar from "@/components/Navbar";
 import BsDateDisplay from "@/components/BsDateDisplay";
 import { useToast } from "@/components/providers/ToastContext";
+import { useRealtimeRefresh } from "@/components/shared/hooks/useRealtimeRefresh";
 
 type FnmisBooking = {
   id: string;
@@ -44,6 +45,7 @@ export default function VendorFnmisPage() {
   }, []);
 
   useEffect(() => { fetchBookings(); }, [fetchBookings]);
+  useRealtimeRefresh(fetchBookings);
 
   const report = async (bookingId: string) => {
     setReporting(bookingId);

@@ -5,6 +5,17 @@ import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+const FNMIS_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+function getEffectiveFnmisDeadline(booking: { createdAt: Date; fnmisDeadline: Date | null }) {
+  const createdDeadline = new Date(booking.createdAt.getTime() + FNMIS_WINDOW_MS);
+  if (!booking.fnmisDeadline) return createdDeadline;
+
+  const storedWindowMs = booking.fnmisDeadline.getTime() - booking.createdAt.getTime();
+
+  return storedWindowMs > FNMIS_WINDOW_MS ? createdDeadline : booking.fnmisDeadline;
+}
+
 // GET /api/fnmis — list foreign guest bookings (all for admin, hotel-scoped for vendor/staff)
 export async function GET(req: NextRequest) {
   try {
@@ -43,13 +54,18 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const enriched = bookings.map(b => ({
-      ...b,
-      isOverdue: !b.fnmisReported && b.fnmisDeadline != null && b.fnmisDeadline < now,
-      hoursLeft: b.fnmisDeadline
-        ? Math.max(0, Math.round((b.fnmisDeadline.getTime() - now.getTime()) / 3600000))
-        : null,
-    }));
+    const enriched = bookings.map(b => {
+      const fnmisDeadline = getEffectiveFnmisDeadline(b);
+
+      return {
+        ...b,
+        fnmisDeadline,
+        isOverdue: !b.fnmisReported && fnmisDeadline != null && fnmisDeadline < now,
+        hoursLeft: fnmisDeadline
+          ? Math.max(0, Math.ceil((fnmisDeadline.getTime() - now.getTime()) / 3600000))
+          : null,
+      };
+    });
 
     return NextResponse.json({ success: true, data: enriched });
   } catch (error) {
