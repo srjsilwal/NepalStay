@@ -60,7 +60,7 @@ export function getCancellationPolicy(checkIn: Date): {
   const days = differenceInCalendarDays(startOfDay(checkIn), startOfDay(today));
   if (days > 7)  return { percent: 100, daysToCheckIn: days, description: "Full refund — cancelled more than 7 days before check-in" };
   if (days >= 3) return { percent: 50,  daysToCheckIn: days, description: "50% refund — cancelled 3–7 days before check-in" };
-  return           { percent: 25,  daysToCheckIn: days, description: "25% refund — cancelled less than 3 days before check-in" };
+  return           { percent: 0,   daysToCheckIn: days, description: "No refund - cancelled less than 3 days before check-in" };
 }
 
 export function generateInvoiceNumber(bookingId: string, amount: number): string {

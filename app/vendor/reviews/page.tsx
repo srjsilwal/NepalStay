@@ -5,6 +5,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import BsDateDisplay from "@/components/BsDateDisplay";
 import { useToast } from "@/components/providers/ToastContext";
+import { useRealtimeRefresh } from "@/components/shared/hooks/useRealtimeRefresh";
 
 type Review = {
   id: string; overallScore: number; cleanlinessScore: number;
@@ -28,7 +29,8 @@ export default function VendorReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [hotelName, setHotelName] = useState("");
 
-  useEffect(() => {
+  const fetchReviews = () => {
+    setLoading(true);
     // Get vendor's hotel first, then its reviews
     fetch("/api/vendor/hotel").then(r => r.json()).then(d => {
       if (!d.success || !d.data) return;
@@ -37,7 +39,10 @@ export default function VendorReviewsPage() {
       setReviews(d.data.reviews ?? []);
     }).catch(() => toastError("Failed to load reviews"))
     .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { fetchReviews(); }, []);
+  useRealtimeRefresh(fetchReviews);
 
   const avg = reviews.length > 0
     ? (reviews.reduce((s, r) => s + r.overallScore, 0) / reviews.length).toFixed(1)

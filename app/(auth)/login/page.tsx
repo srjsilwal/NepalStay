@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Hotel, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 const schema = z.object({
   email:    z.string().email("Invalid email"),
@@ -69,8 +70,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500 rounded-2xl mb-4 shadow-lg">
-            <Hotel className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl mb-4 shadow-lg overflow-hidden border border-amber-100">
+            <Image src="/logo.png" alt="NepalStay" width={64} height={64} className="h-full w-full object-cover" priority />
           </div>
           <h1 className="text-3xl font-bold text-white">Nepal<span className="text-amber-400">Stay</span></h1>
           <p className="text-slate-400 mt-1">Book hotels across Nepal</p>
@@ -107,10 +108,10 @@ export default function LoginPage() {
               {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
             </div>
 
-            <button type="submit" disabled={isSubmitting}
-              className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
+            <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
               {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-              Sign in
+              {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
           </form>
 

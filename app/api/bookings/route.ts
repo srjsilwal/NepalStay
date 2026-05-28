@@ -221,7 +221,7 @@ export async function POST(req: NextRequest) {
     });
 
     const isForeign = user?.nationality === "FOREIGN";
-    const fnmisDeadline = isForeign ? addDays(checkInDate, 1) : undefined;
+    const fnmisDeadline = isForeign ? addDays(new Date(), 1) : undefined;
 
     // ────────────────────────────────
     // Transaction (safe booking)

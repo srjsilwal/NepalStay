@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+const FNMIS_WINDOW_MS = 24 * 60 * 60 * 1000;
+
 /**
  * GET /api/cron/fnmis-check
  * Run hourly via cron (Vercel cron, uptime robot, etc.)
@@ -16,13 +18,17 @@ export async function GET(req: NextRequest) {
 
   try {
     const now = new Date();
+    const deadlineCutoff = new Date(now.getTime() - FNMIS_WINDOW_MS);
 
     const overdueResult = await prisma.booking.updateMany({
       where: {
         user: { nationality: "FOREIGN", passportNumber: { not: null } },
         fnmisReported: false,
         fnmisOverdue: false,
-        fnmisDeadline: { lt: now },
+        OR: [
+          { fnmisDeadline: { lt: now } },
+          { createdAt: { lt: deadlineCutoff } },
+        ],
         status: { in: ["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"] },
       },
       data: { fnmisOverdue: true },

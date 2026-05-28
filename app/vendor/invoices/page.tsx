@@ -4,6 +4,7 @@ import { Loader2, RefreshCw, FileText, CheckCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import BsDateDisplay from "@/components/BsDateDisplay";
 import { useToast } from "@/components/providers/ToastContext";
+import { useRealtimeRefresh } from "@/components/shared/hooks/useRealtimeRefresh";
 
 type CashBooking = {
   id: string;
@@ -55,6 +56,7 @@ export default function VendorInvoicesPage() {
   }, []);
 
   useEffect(() => { fetchBookings(); }, [fetchBookings]);
+  useRealtimeRefresh(fetchBookings);
 
   const issueInvoice = async (id: string) => {
     setWorking(id + "_inv");

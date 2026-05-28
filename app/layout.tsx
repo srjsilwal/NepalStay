@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import SessionProvider  from "@/components/providers/SessionProvider";
 import { CalendarProvider } from "@/components/providers/CalendarContext";
 import { ToastProvider }   from "@/components/providers/ToastContext";
+import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
 import { QueryClientProvider } from "@/components/providers/QueryClientProvider";
 import "./globals.css";
 import { CompareProvider } from "@/components/features/CompareContext";
@@ -33,6 +34,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/logo.png",
+    apple: "/logo.png",
   },
 };
 
@@ -59,11 +61,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <QueryClientProvider>
             <CalendarProvider>
               <ToastProvider>
-                <CompareProvider>
-                  {children}
-                  <CompareBar />
-                  <ChatWidget />
-                </CompareProvider>
+                <RealtimeProvider>
+                  <CompareProvider>
+                    {children}
+                    <CompareBar />
+                    <ChatWidget />
+                  </CompareProvider>
+                </RealtimeProvider>
               </ToastProvider>
             </CalendarProvider>
           </QueryClientProvider>

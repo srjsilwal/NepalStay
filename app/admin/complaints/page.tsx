@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useToast } from "@/components/providers/ToastContext";
+import { useRealtimeRefresh } from "@/components/shared/hooks/useRealtimeRefresh";
 
 type ComplaintStatus = "OPEN" | "INVESTIGATING" | "RESOLVED" | "DISMISSED";
 
@@ -55,6 +56,7 @@ export default function AdminComplaintsPage() {
   };
 
   useEffect(() => { fetchData(); }, [filter]);
+  useRealtimeRefresh(fetchData);
 
   const updateComplaint = async (id: string, status: ComplaintStatus) => {
     setSaving(id);
