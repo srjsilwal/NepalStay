@@ -123,11 +123,17 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
       const requestMethod = typeof input === "string" || input instanceof URL ? undefined : input.method;
       const method = (init?.method ?? requestMethod ?? "GET").toUpperCase();
       const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
-      const resolvedUrl = new URL(url, window.location.href);
-      const isApiMutation =
-        method !== "GET" &&
-        resolvedUrl.origin === window.location.origin &&
-        resolvedUrl.pathname.startsWith("/api/");
+      let isApiMutation = false;
+
+      try {
+        const resolvedUrl = new URL(url, window.location.href);
+        isApiMutation =
+          method !== "GET" &&
+          resolvedUrl.origin === window.location.origin &&
+          resolvedUrl.pathname.startsWith("/api/");
+      } catch {
+        isApiMutation = false;
+      }
 
       if (isApiMutation) {
         window.setTimeout(() => {
