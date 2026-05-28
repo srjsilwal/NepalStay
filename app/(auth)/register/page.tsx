@@ -101,7 +101,7 @@ export default function RegisterPage() {
         phone: data.phone,
         role: data.role,
         nationality: data.nationality,
-        country: data.country,
+        country: data.nationality === "FOREIGN" ? data.country : undefined,
         passportNumber: data.passportNumber,
         purposeOfVisit: data.purposeOfVisit,
       }),

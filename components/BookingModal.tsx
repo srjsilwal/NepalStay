@@ -214,6 +214,7 @@ export default function BookingModal({ room, hotel, onClose, onSuccess }: Props)
             </button>
             <button
               onClick={onClose}
+              aria-label="Close"
               className="text-slate-400 hover:text-slate-600 p-1"
             >
               <X className="w-5 h-5" />

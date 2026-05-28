@@ -8,9 +8,9 @@ export const dynamic = "force-dynamic";
 const FNMIS_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 function getEffectiveFnmisDeadline(booking: { createdAt: Date; fnmisDeadline: Date | null }) {
-  if (!booking.fnmisDeadline) return null;
-
   const createdDeadline = new Date(booking.createdAt.getTime() + FNMIS_WINDOW_MS);
+  if (!booking.fnmisDeadline) return createdDeadline;
+
   const storedWindowMs = booking.fnmisDeadline.getTime() - booking.createdAt.getTime();
 
   return storedWindowMs > FNMIS_WINDOW_MS ? createdDeadline : booking.fnmisDeadline;
