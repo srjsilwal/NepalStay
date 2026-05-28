@@ -118,9 +118,10 @@ export const authOptions: NextAuthOptions = {
         const parsedUrl = new URL(url, baseUrl);
         const parsedBase = new URL(baseUrl);
         
-        // Only allow same-origin redirects
+        // Only allow same-origin redirects. NextAuth's client parses this with
+        // new URL(...), so return an absolute URL instead of a relative path.
         if (parsedUrl.origin === parsedBase.origin) {
-          return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+          return parsedUrl.toString();
         }
       } catch {
         // Invalid URL, fall through to default
