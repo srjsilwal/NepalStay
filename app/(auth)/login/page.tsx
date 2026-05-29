@@ -119,16 +119,6 @@ export default function LoginPage() {
             Don&apos;t have an account?{" "}
             <Link href="/register" className="text-amber-600 font-medium hover:underline">Create one</Link>
           </p>
-
-          {/* Demo credentials */}
-          <div className="mt-6 p-3 bg-slate-50 rounded-lg text-xs text-slate-500 space-y-0.5">
-            <p className="font-semibold text-slate-600 mb-1">Demo credentials:</p>
-            <p>Admin:    admin@nepalstay.com / admin123</p>
-            <p>Vendor:   rajesh@urbanboutique.com / password123</p>
-            <p>Staff:    ramesh@urbanboutique.com / password123</p>
-            <p>Customer (Nepali): traveler@example.com / password123</p>
-            <p>Customer (Foreign): foreign@example.com / password123</p>
-          </div>
         </div>
       </div>
     </div>
