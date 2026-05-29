@@ -15,7 +15,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       where: { id: params.id },
       include: {
         user:  { select: { name: true, email: true, phone: true, avatar: true } },
-        hotel: { select: { name: true, slug: true, city: true, address: true, images: true, contactPhone: true, contactEmail: true } },
+        hotel: { select: { id: true, name: true, slug: true, city: true, address: true, images: true, contactPhone: true, contactEmail: true, vendorId: true } },
         room:  { select: { name: true, type: true, floor: true, pricePerNight: true } },
       },
     });
@@ -23,8 +23,26 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     if (!booking) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
 
     const user = session.user as any;
+    
+    // Customers can only view their own bookings
     if (user.role === "CUSTOMER" && booking.userId !== user.id) {
       return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
+
+    // Vendors can only view bookings for their own hotel
+    if (user.role === "VENDOR" && booking.hotel.vendorId !== user.id) {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
+
+    // Staff can only view bookings for their assigned hotel
+    if (user.role === "STAFF") {
+      const staffUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { staffHotelId: true, isActive: true },
+      });
+      if (!staffUser?.isActive || staffUser.staffHotelId !== booking.hotelId) {
+        return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+      }
     }
 
     return NextResponse.json({ success: true, data: booking });
@@ -125,6 +143,19 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     const updateData: any = { status };
+
+    // When vendor confirms a PENDING booking, mark payment as PAID
+    // (This handles the "pay at hotel" flow where vendor receives payment in person)
+    if (booking.status === "PENDING" && status === "CONFIRMED" && booking.paymentStatus === "UNPAID") {
+      updateData.paymentStatus = "PAID";
+      updateData.paidAt = new Date();
+      // Generate invoice for cash booking if not already done
+      if (!booking.invoiceNumber) {
+        const { generateInvoiceNumber } = await import("@/lib/booking");
+        updateData.invoiceNumber = generateInvoiceNumber(booking.id, booking.totalPrice);
+        updateData.invoiceIssuedAt = new Date();
+      }
+    }
 
     // When checking out, room goes to CLEANING status for housekeeping
     if (status === "CHECKED_OUT") {

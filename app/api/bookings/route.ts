@@ -58,19 +58,36 @@ export async function GET(req: NextRequest) {
     }
 
     if (user.role === "VENDOR") {
+      // Vendors can only see bookings for their own hotel
       const hotel = await prisma.hotel.findUnique({
         where: { vendorId: user.id },
+        select: { id: true },
       });
-      if (hotel) where.hotelId = hotel.id;
+      if (!hotel) {
+        // Vendor has no hotel - return empty list
+        return NextResponse.json({
+          success: true,
+          data: [],
+          total: 0,
+        });
+      }
+      where.hotelId = hotel.id;
     }
 
     if (user.role === "STAFF") {
       const staffUser = await prisma.user.findUnique({
         where: { id: user.id },
+        select: { staffHotelId: true, isActive: true },
       });
-      if (staffUser?.staffHotelId) {
-        where.hotelId = staffUser.staffHotelId;
+      if (!staffUser?.staffHotelId || !staffUser.isActive) {
+        // Staff member has no assigned hotel or is inactive - return empty list
+        return NextResponse.json({
+          success: true,
+          data: [],
+          total: 0,
+        });
       }
+      where.hotelId = staffUser.staffHotelId;
     }
 
     if (status) where.status = status;
