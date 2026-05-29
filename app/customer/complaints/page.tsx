@@ -46,7 +46,7 @@ export default function CustomerComplaintsPage() {
     try {
       const [cRes, bRes] = await Promise.all([
         fetch("/api/complaints"),
-        fetch("/api/bookings?status=CONFIRMED&limit=100"),
+        fetch("/api/bookings?limit=100"),
       ]);
       const [cData, bData] = await Promise.all([cRes.json(), bRes.json()]);
       if (cData.success) setComplaints(cData.data ?? []);
@@ -142,7 +142,7 @@ export default function CustomerComplaintsPage() {
                     <option value="">— Choose a booking —</option>
                     {bookings.map(b => (
                       <option key={b.id} value={b.id}>
-                        {b.hotel.name}, {b.hotel.city} · Checked out: {new Date(b.checkOut).toLocaleDateString()}
+                        {b.hotel.name}, {b.hotel.city} · {b.status} · {new Date(b.checkOut).toLocaleDateString()}
                       </option>
                     ))}
                   </select>
