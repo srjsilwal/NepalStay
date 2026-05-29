@@ -29,21 +29,8 @@ export default function LoginPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
-      const role = (session.user as any).role;
-      // Redirect to appropriate dashboard based on role
-      switch (role) {
-        case "ADMIN":
-          router.push("/admin");
-          break;
-        case "VENDOR":
-          router.push("/vendor");
-          break;
-        case "STAFF":
-          router.push("/staff");
-          break;
-        default:
-          router.push("/customer/profile");
-      }
+      router.push("/");
+      router.refresh();
     }
   }, [status, session, router]);
 
