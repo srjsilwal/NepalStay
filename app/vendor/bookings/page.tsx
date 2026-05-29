@@ -58,9 +58,9 @@ function RefundModal({ booking, onClose, onConfirm, loading }: {
     ? 100
     : daysToCheckIn >= 3
     ? 50
-    : 25;
+    : 0;
   const refundAmt = Math.round(booking.totalPrice * pct / 100);
-  const policy = daysToCheckIn > 7 ? "Full refund (>7 days)" : daysToCheckIn >= 3 ? "50% refund (3–7 days)" : "25% refund (<3 days)";
+  const policy = daysToCheckIn > 7 ? "100% refund (>7 days)" : daysToCheckIn >= 3 ? "50% refund (3-7 days)" : "No refund (<3 days)";
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={!loading ? onClose : undefined}>
@@ -89,7 +89,7 @@ function RefundModal({ booking, onClose, onConfirm, loading }: {
             <div className="flex justify-between border-t border-slate-200 pt-2 mt-2">
               <span className="text-slate-500">Policy (Days to check-in)</span>
               <span className="font-medium text-slate-600 text-xs text-right">
-                {daysToCheckIn > 7 ? "100% refund (>7 days)" : daysToCheckIn >= 3 ? "50% refund (3-7 days)" : "25% refund (<3 days)"}
+                {policy}
               </span>
             </div>
             <div className="flex justify-between">
@@ -103,7 +103,7 @@ function RefundModal({ booking, onClose, onConfirm, loading }: {
             <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200">
               <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-amber-600">
-                Limited refund due to short cancellation notice. Guest will receive NPR {refundAmt.toLocaleString()}.
+                No refund applies because the cancellation is less than 3 days before check-in.
               </p>
             </div>
           )}
