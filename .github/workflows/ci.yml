@@ -22,10 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
@@ -44,12 +44,12 @@ jobs:
 
       - name: Run Unit Tests
         run: npm test
-        
+
       - name: Build Application
         run: npm run build
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: next-build
           path: .next # path means the directory or file to upload as an artifact. In this case, it is the .next directory which contains the build output of a Next.js application.
