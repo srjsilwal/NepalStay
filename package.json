@@ -5,10 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest --passWithNoTests",
+    "typecheck": "tsc --noEmit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "db:push": "prisma db push",
