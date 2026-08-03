@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { AlertCircle } from 'lucide-react';
 import * as Sentry from '@sentry/nextjs';
 
@@ -67,7 +68,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               Oops! Something went wrong
             </h1>
             <p className="text-gray-600 mb-6">
-              We've been notified about this issue and will fix it as soon as possible.
+              We&apos;ve been notified about this issue and will fix it as soon as possible.
             </p>
 
             {process.env.NODE_ENV === 'development' && (
@@ -88,12 +89,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               >
                 Try Again
               </button>
-              <a
+              <Link
                 href="/"
                 className="block w-full px-4 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition"
               >
                 Go Home
-              </a>
+              </Link>
             </div>
           </div>
         </div>

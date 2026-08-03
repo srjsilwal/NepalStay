@@ -51,7 +51,13 @@ function RefundModal({ booking, onClose, onConfirm, loading }: {
   loading: boolean;
 }) {
   const [reason, setReason] = useState("Guest cancellation");
-  const daysToCheckIn = Math.ceil((new Date(booking.checkIn).getTime() - Date.now()) / 86400000);
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    setNow(Date.now());
+  }, [booking.checkIn]);
+
+  const daysToCheckIn = Math.ceil((new Date(booking.checkIn).getTime() - now) / 86400000);
   // Improved refund calculation: ensure minimum refund for any cancellation
   const pct =
   daysToCheckIn > 7
