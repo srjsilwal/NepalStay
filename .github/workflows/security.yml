@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Trivy Filesystem Scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs # This specifies that the scan should be performed on the filesystem of the repository. It checks for vulnerabilities in the files and directories of the codebase.
           scan-ref: . # This specifies the reference point for the scan. In this case, it is set to the current directory (.) of the repository, meaning that the scan will be performed on the entire codebase.
