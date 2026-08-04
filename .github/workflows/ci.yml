@@ -51,6 +51,6 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: next-build
+          name: next-build # This is the name of the artifact that will be uploaded. It can be any string that you choose, and it will be used to identify the artifact in the GitHub Actions interface.
           path: .next # path means the directory or file to upload as an artifact. In this case, it is the .next directory which contains the build output of a Next.js application.
           retention-days: 7
