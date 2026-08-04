@@ -15,7 +15,7 @@ export const ourFileRouter = {
       }
       return { userId: (session.user as any).id };
     })
-    .onUploadComplete(async ({ file }) => ({ url: file.ufsUrl })),
+    .onUploadComplete(async ({ file }) => ({ url: file.url })),
 
   // User avatar — any authenticated user
   userAvatar: f({ image: { maxFileSize: "2MB", maxFileCount: 1 } })
@@ -28,9 +28,9 @@ export const ourFileRouter = {
       const { default: prisma } = await import("@/lib/prisma");
       await prisma.user.update({
         where: { id: metadata.userId },
-        data: { avatar: file.ufsUrl },
+        data: { avatar: file.url },
       });
-      return { url: file.ufsUrl };
+      return { url: file.url };
     }),
 } satisfies FileRouter;
 

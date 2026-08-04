@@ -11,8 +11,9 @@ const schema = z.object({
   rejectionReason: z.string().optional(),
 });
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).role !== "ADMIN") {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
@@ -23,7 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       return NextResponse.json({ success: false, error: "Invalid status" }, { status: 400 });
     }
     const hotel = await prisma.hotel.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         status:          parsed.data.status,
         rejectionReason: parsed.data.rejectionReason,

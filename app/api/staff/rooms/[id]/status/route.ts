@@ -13,9 +13,10 @@ const schema = z.object({
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (
@@ -44,7 +45,7 @@ export async function PATCH(
     const updatedRoom = await prisma.$transaction(async (tx) => {
       // Read room inside transaction
       const room = await tx.room.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { hotel: true },
       });
 
@@ -73,13 +74,13 @@ export async function PATCH(
 
       // Update + log atomically — always set updatedAt to trigger real-time sync
       const roomUpdate = await tx.room.update({
-        where: { id: params.id },
+        where: { id },
         data: { status: parsed.data.status, updatedAt: new Date() },
       });
 
       await tx.roomStatusLog.create({
         data: {
-          roomId: params.id,
+            roomId: id,
           updatedBy: userId,
           status: parsed.data.status,
           notes: parsed.data.notes,

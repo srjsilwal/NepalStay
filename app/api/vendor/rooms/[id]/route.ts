@@ -27,13 +27,14 @@ async function ownsRoom(vendorId: string, roomId: string) {
   return room?.hotel.vendorId === vendorId ? room : null;
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session || !["VENDOR","ADMIN"].includes((session.user as any).role)) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
     }
-    const room = await ownsRoom((session.user as any).id, params.id);
+    const room = await ownsRoom((session.user as any).id, id);
     if (!room && (session.user as any).role !== "ADMIN") {
       return NextResponse.json({ success: false, error: "Room not found or unauthorized" }, { status: 404 });
     }
@@ -42,7 +43,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (!parsed.success) {
       return NextResponse.json({ success: false, error: parsed.error.errors[0].message }, { status: 400 });
     }
-    const updated = await prisma.room.update({ where: { id: params.id }, data: parsed.data });
+    const updated = await prisma.room.update({ where: { id }, data: parsed.data });
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
     console.error("[VENDOR_ROOM_PUT]", error);
@@ -50,24 +51,25 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session || !["VENDOR","ADMIN"].includes((session.user as any).role)) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
     }
-    const room = await ownsRoom((session.user as any).id, params.id);
+    const room = await ownsRoom((session.user as any).id, id);
     if (!room && (session.user as any).role !== "ADMIN") {
       return NextResponse.json({ success: false, error: "Room not found or unauthorized" }, { status: 404 });
     }
     // Guard: no active bookings
     const active = await prisma.booking.findFirst({
-      where: { roomId: params.id, status: { in: ["CONFIRMED","CHECKED_IN"] } },
+      where: { roomId: id, status: { in: ["CONFIRMED","CHECKED_IN"] } },
     });
     if (active) {
       return NextResponse.json({ success: false, error: "Cannot delete a room with active bookings" }, { status: 409 });
     }
-    await prisma.room.delete({ where: { id: params.id } });
+    await prisma.room.delete({ where: { id } });
     return NextResponse.json({ success: true, message: "Room deleted" });
   } catch (error) {
     console.error("[VENDOR_ROOM_DELETE]", error);

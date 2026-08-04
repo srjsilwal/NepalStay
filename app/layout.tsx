@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import SessionProvider  from "@/components/providers/SessionProvider";
@@ -9,15 +8,11 @@ import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
 import { QueryClientProvider } from "@/components/providers/QueryClientProvider";
 import "./globals.css";
 import { CompareProvider } from "@/components/features/CompareContext";
-import dynamicLib from "next/dynamic";
+import CompareBar from "@/components/features/CompareBar";
+import ServiceWorkerRegister from "@/components/features/ServiceWorkerRegister";
+import ChatWidget from "@/components/features/ChatWidget";
 
 export const dynamic = "force-dynamic";
-
-const CompareBar = dynamicLib(() => import("@/components/features/CompareBar"), { ssr: false });
-const ServiceWorkerRegister = dynamicLib(() => import("@/components/features/ServiceWorkerRegister"), { ssr: false });
-const ChatWidget = dynamicLib(() => import("@/components/features/ChatWidget"), { ssr: false });
-
-const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: {
@@ -55,7 +50,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://utfs.io" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://utfs.io" />
       </head>
-      <body className={inter.className}>
+      <body className="antialiased">
         <ServiceWorkerRegister />
         <SessionProvider session={session}>
           <QueryClientProvider>

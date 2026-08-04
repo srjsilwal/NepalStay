@@ -6,13 +6,14 @@ import { getCancellationPolicy, generateCreditNoteNumber } from "@/lib/booking";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
 
     const booking = await prisma.booking.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user:  { select: { name: true, email: true, phone: true, avatar: true } },
         hotel: { select: { id: true, name: true, slug: true, city: true, address: true, images: true, contactPhone: true, contactEmail: true, vendorId: true } },
@@ -52,8 +53,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
 
@@ -61,7 +63,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const user       = session.user as any;
 
     const booking = await prisma.booking.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { room: true, hotel: true, user: true },
     });
     if (!booking) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
@@ -117,15 +119,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         return NextResponse.json({
           success: false,
           error: "This booking was paid. Use the Cancel & Refund button to process your refund.",
-          redirectTo: `/api/bookings/${params.id}/refund`,
+          redirectTo: `/api/bookings/${id}/refund`,
         }, { status: 400 });
       }
       // Unpaid — cancel directly
       await prisma.booking.update({
-        where: { id: params.id },
+        where: { id },
         data:  { status: "CANCELLED", refundStatus: "NOT_ELIGIBLE" },
       });
-      return NextResponse.json({ success: true, data: { id: params.id, status: "CANCELLED" } });
+      return NextResponse.json({ success: true, data: { id, status: "CANCELLED" } });
     }
 
     // Staff/Vendor/Admin status transitions
@@ -172,7 +174,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       });
     }
 
-    const updated = await prisma.booking.update({ where: { id: params.id }, data: updateData });
+    const updated = await prisma.booking.update({ where: { id }, data: updateData });
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
     console.error("[BOOKING_PATCH]", error);

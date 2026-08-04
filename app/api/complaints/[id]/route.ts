@@ -8,9 +8,10 @@ export const dynamic = "force-dynamic";
 // PATCH /api/complaints/[id] — admin updates status and notes
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).role !== "ADMIN") {
       return NextResponse.json({ success: false, error: "Admin only" }, { status: 403 });
@@ -22,11 +23,11 @@ export async function PATCH(
       return NextResponse.json({ success: false, error: "Invalid status" }, { status: 400 });
     }
 
-    const complaint = await prisma.complaint.findUnique({ where: { id: params.id } });
+    const complaint = await prisma.complaint.findUnique({ where: { id } });
     if (!complaint) return NextResponse.json({ success: false, error: "Complaint not found" }, { status: 404 });
 
     const updated = await prisma.complaint.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(status && { status }),
         ...(adminNotes !== undefined && { adminNotes }),
@@ -48,15 +49,16 @@ export async function PATCH(
 // GET /api/complaints/[id] — get single complaint (admin or owner)
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
 
     const actor = session.user as any;
     const complaint = await prisma.complaint.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         customer: { select: { name: true, email: true } },
         hotel:    { select: { name: true, city: true, status: true, id: true } },

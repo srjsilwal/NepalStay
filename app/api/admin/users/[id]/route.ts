@@ -12,13 +12,14 @@ const schema = z.object({
   staffHotelId: z.string().nullable().optional(),
 });
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).role !== "ADMIN") {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
     }
-    if (params.id === (session.user as any).id) {
+    if (id === (session.user as any).id) {
       return NextResponse.json({ success: false, error: "Cannot modify your own account" }, { status: 400 });
     }
     const body   = await req.json();
@@ -26,7 +27,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (!parsed.success) {
       return NextResponse.json({ success: false, error: "Invalid data" }, { status: 400 });
     }
-    const user = await prisma.user.update({ where: { id: params.id }, data: parsed.data });
+    const user = await prisma.user.update({ where: { id }, data: parsed.data });
     return NextResponse.json({ success: true, data: user });
   } catch (error) {
     console.error("[ADMIN_USER_PATCH]", error);

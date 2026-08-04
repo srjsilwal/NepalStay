@@ -8,13 +8,14 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     const session = await getServerSession(authOptions);
 
     const hotel = await prisma.hotel.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       include: {
         vendor: { select: { name: true, email: true, phone: true } },
         rooms: {
