@@ -1,0 +1,46 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Next.js
+.next
+out
+
+# Git
+.git
+.gitignore
+.github
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Coverage
+coverage
+
+# Tests
+__tests__
+
+# IDE
+.vscode
+.idea
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Documentation
+*.md
+
+# Build Cache
+.swc
+.kombai
+
+# Misc
+*.tsbuildinfo

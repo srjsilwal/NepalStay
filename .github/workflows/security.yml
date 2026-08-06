@@ -103,7 +103,7 @@ jobs:
           cache: "npm" # This enables caching for npm dependencies, which can speed up the workflow by reusing previously installed packages.
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Application
         run: npm run build
