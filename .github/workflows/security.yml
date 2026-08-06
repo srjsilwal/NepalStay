@@ -59,24 +59,24 @@ jobs:
     permissions:
       contents: read
 
-      steps:
-        - name: Checkout Repositoy
-          uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repositoy
+        uses: actions/checkout@v4
 
-        - name: Generate SBOM
-          uses: aquasecurity/trivy-action@v0.36.0
-          with:
-            scan-type: fs # This specifies that the scan should be performed on the filesystem of the repository. It checks for vulnerabilities in the files and directories of the codebase.
-            scan-ref: . # This specifies the reference point for the scan. In this case, it is set to the current directory (.) of the repository, meaning that the scan will be performed on the entire codebase.
-            format: cyclonedx # This specifies that the output format of the scan results should be in CycloneDX format. CycloneDX is a lightweight SBOM (Software Bill of Materials) standard that provides a comprehensive inventory of the components and dependencies used in the software.
-            output: sbom.cdx.json # This specifies the name of the file where the SBOM will be saved. The results will be stored in a file named "sbom.cdx.json" in the root directory of the repository.
+      - name: Generate SBOM
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs # This specifies that the scan should be performed on the filesystem of the repository. It checks for vulnerabilities in the files and directories of the codebase.
+          scan-ref: . # This specifies the reference point for the scan. In this case, it is set to the current directory (.) of the repository, meaning that the scan will be performed on the entire codebase.
+          format: cyclonedx # This specifies that the output format of the scan results should be in CycloneDX format. CycloneDX is a lightweight SBOM (Software Bill of Materials) standard that provides a comprehensive inventory of the components and dependencies used in the software.
+          output: sbom.cdx.json # This specifies the name of the file where the SBOM will be saved. The results will be stored in a file named "sbom.cdx.json" in the root directory of the repository.
 
-        - name: Upload SBOM
-          uses: actions/upload-artifact@v4
-          with:
-            name: sbom # This specifies the name of the artifact to be uploaded. The SBOM file will be uploaded as an artifact with the name "sbom".
-            path: sbom.cdx.json # This specifies the path to the SBOM file that will be uploaded as an artifact. The upload-artifact action will take this file and make it available for download in the workflow run artifacts.
-            retention-days: 30 # This specifies the number of days the uploaded artifact will be retained. In this case, the SBOM artifact will be kept for 30 days before being automatically deleted.
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom # This specifies the name of the artifact to be uploaded. The SBOM file will be uploaded as an artifact with the name "sbom".
+          path: sbom.cdx.json # This specifies the path to the SBOM file that will be uploaded as an artifact. The upload-artifact action will take this file and make it available for download in the workflow run artifacts.
+          retention-days: 30 # This specifies the number of days the uploaded artifact will be retained. In this case, the SBOM artifact will be kept for 30 days before being automatically deleted.
 
   codeql-analysis:
     name: CodeQL Analysis
@@ -86,29 +86,29 @@ jobs:
       actions: read # This permission is required to read the workflow's actions and their metadata.
       security-events: write # This permission is required to create security alerts in the repository. It allows the workflow to report any security issues it finds during the CodeQL analysis.
 
-      steps:
-        - name: checkout Repository
-          uses: actions/checkout@v4
+    steps:
+      - name: checkout Repository
+        uses: actions/checkout@v4
 
-        - name: Initialize CodeQL
-          uses: github/codeql-action/init@v3
-          with:
-            languages: typescript, javascript # This specifies the programming language(s) to be analyzed by CodeQL. In this case, it is set to TypeScript and JavaScript, which means that CodeQL will analyze the TypeScript and JavaScript code in the repository for potential security vulnerabilities and code quality issues.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: typescript, javascript # This specifies the programming language(s) to be analyzed by CodeQL. In this case, it is set to TypeScript and JavaScript, which means that CodeQL will analyze the TypeScript and JavaScript code in the repository for potential security vulnerabilities and code quality issues.
 
-        - name: Setup Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: 20 # This specifies the version of Node.js to be used in the workflow. In this case, it is set to version 20, which means that the workflow will use Node.js version 20 for running the CodeQL analysis and any other Node.js-related tasks.
-            cache: "npm" # This enables caching for npm dependencies, which can speed up the workflow by reusing previously installed packages.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # This specifies the version of Node.js to be used in the workflow. In this case, it is set to version 20, which means that the workflow will use Node.js version 20 for running the CodeQL analysis and any other Node.js-related tasks.
+          cache: "npm" # This enables caching for npm dependencies, which can speed up the workflow by reusing previously installed packages.
 
-        - name: Install Dependencies
-          run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-        - name: Build Application
-          run: npm run build
+      - name: Build Application
+        run: npm run build
 
-        - name: Perform CodeQL Analysis
-          uses: github/codeql-action/analyze@v3
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
 
   security-summary:
     name: Security Summary
