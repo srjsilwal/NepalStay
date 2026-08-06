@@ -12,6 +12,7 @@ on:
       - main
 permissions:
   contents: read
+  
 
 concurrency:
   group: ci-${{github.workflow}}-${{github.ref}} # This ensures that only one job from this workflow can run at a time for a specific branch or tag. for example, if you push multiple commits to the same branch, only the latest commit will be built and tested.
