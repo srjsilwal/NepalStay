@@ -99,7 +99,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # This specifies the version of Node.js to be used in the workflow. In this case, it is set to version 20, which means that the workflow will use Node.js version 20 for running the CodeQL analysis and any other Node.js-related tasks.
+          node-version: 22 # This specifies the version of Node.js to be used in the workflow. In this case, it is set to version 22, which means that the workflow will use Node.js version 20 for running the CodeQL analysis and any other Node.js-related tasks.
           cache: "npm" # This enables caching for npm dependencies, which can speed up the workflow by reusing previously installed packages.
 
       - name: Install Dependencies
