@@ -1,0 +1,54 @@
+name: Docker
+on:
+  push:
+    braches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+permissions:
+  id-token: write # This permission allows the workflow to generate an OpenID Connect (OIDC) token, which can be used for authentication with cloud providers and other services that support OIDC. It is often used for securely accessing resources without needing to store long-lived credentials in the repository.
+  contents: read # This permission allows the workflow to read the contents of the repository, including files and directories. It is necessary for actions that need to access the codebase, such as checking out the repository or reading configuration files.
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{vars.AWS_ROLE_ARN}}
+          aws-region: ${{vars.AWS_REGION}}
+
+      - name: Login to Amazon ECR
+        id: login-ecr # This step logs in to Amazon Elastic Container Registry (ECR) using the AWS credentials configured in the previous step. It allows the workflow to authenticate with ECR and perform actions like pushing or pulling Docker images.
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action#v3 # This action sets up Docker Buildx, which is an extended build tool for Docker that allows for building multi-platform images and leveraging advanced features like caching and parallel builds.
+
+      - name: Extract Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5 # This action extracts metadata for Docker images, such as tags and labels, based on the context of the repository and the current Git state. It helps in generating consistent and meaningful metadata for the built images.
+        with:
+          images: ${{steps.login-ecr.outputs.registry}}/${{vars.ECR_REPOSITORY}} # This specifies the target image name for the Docker image being built. It uses the output from the previous login step to get the ECR registry URL and combines it with a repository name defined in the workflow variables (ECR_REPOSITORY). This ensures that the built image is tagged correctly for pushing to the specified ECR repository.
+          tags: |
+            type=ref,event=branch # This specifies that the Docker image should be tagged based on the Git reference (ref) and the event type (event). In this case, it will create tags based on the branch name when a push or pull request event occurs. This helps in versioning the Docker images according to the Git workflow.
+            type=sha # This specifies that the Docker image should also be tagged with the Git commit SHA (type=sha). This provides a unique identifier for the image based on the specific commit, allowing for precise versioning and traceability of the built images.
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v6 # This action builds and pushes Docker images using the Docker Buildx tool. It allows for building images from a Dockerfile and optionally pushing them to a container registry.
+        with:
+          context: . # This specifies the build context for the Docker image. The build context is the directory that contains the Dockerfile and any other files needed for the build process. In this case, it is set to the current directory (.), which means that the Dockerfile and other necessary files are located in the root of the repository.
+          file: ./Dockerfile # This specifies the path to the Dockerfile that will be used to build the Docker image. In this case, it is set to ./Dockerfile, which means that the Dockerfile is located in the root of the repository.
+          push: ${{github.event_name != 'pull_request'}} # This condition determines whether the built Docker image should be pushed to the container registry. If the event triggering the workflow is not a pull request (i.e., it is a push event), the image will be pushed. This prevents pushing images for pull request events, which are typically used for testing and validation.
+          tags: ${{steps.meta.outputs.tags}} # This specifies the tags that will be applied to the built Docker image. It uses the output from the "Extract Docker Metadata" step, which generates tags based on the Git reference and commit SHA. This ensures that the built image is tagged consistently with the repository's state and versioning scheme.
+          labels: ${{steps.meta.outputs.labels}} # This specifies the labels that will be applied to the built Docker image. It uses the output from the "Extract Docker Metadata" step, which generates labels based on the repository's metadata and Git state. Labels provide additional information about the image, such as version, build date, and other relevant metadata.
+          cache-from: type=gha # This specifies the cache source for the Docker build process. It uses GitHub Actions (GHA) as the cache source, which allows for caching previously built layers of the Docker image. This can speed up subsequent builds by reusing cached layers instead of rebuilding them from scratch.
+          cache-to: type=gha,mode=max # This specifies the cache destination for the Docker build process. It uses GitHub Actions (GHA) as the cache destination and sets the mode to "max," which means that the build process will store the maximum amount of cache possible. This helps in optimizing future builds by providing a more extensive cache for reuse.

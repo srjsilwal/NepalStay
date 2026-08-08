@@ -1,0 +1,47 @@
+name: Terraform
+
+on:
+    pull_request:
+        paths:
+            - "terraform/**"
+    push:
+        branches:
+            - main
+        paths:
+            - "terraform/**"
+
+permissions:
+    contents: read
+    id-token: write
+
+jobs:
+    terraform:
+        runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: terraform/environments/dev
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+
+            - name: Terraform Format
+              run: terraform fmt -check -recursive ../../
+
+            - name: Terraform Init
+              run: terraform init
+
+            - name: Terraform Validate
+              run: terraform validate
+
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+               role-to-assume: ${{vars.AWS_ROLE_ARN}}
+               aws-region: ${{vars.AWS_REGION}}
+               
+            - name: Terraform Plan
+              run: terraform plan

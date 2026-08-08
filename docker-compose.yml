@@ -1,0 +1,14 @@
+version: "3.9"
+services: 
+  nepalstay:
+    container_name: nepalstay
+    build:  # This section specifies the build configuration for the Docker image. It tells Docker to build an image for the "nepalstay" service using the specified context and Dockerfile.
+      context: . # The context is set to the current directory (.) which means that Docker will look for the Dockerfile and any other files needed for the build in the current directory.
+      dockerfile: Dockerfile
+    image: nepalstay:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped # This restart policy ensures that the container will automatically restart unless it is explicitly stopped. It helps to keep the service running in case of failures or system reboots.
+    
