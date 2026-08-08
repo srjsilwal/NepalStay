@@ -24,14 +24,14 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{vars.AWS_ROLE_ARN}}
-          aws-region: ${{vars.AWS_REGION}}
+          aws-region: us-east-1
 
       - name: Login to Amazon ECR
         id: login-ecr # This step logs in to Amazon Elastic Container Registry (ECR) using the AWS credentials configured in the previous step. It allows the workflow to authenticate with ECR and perform actions like pushing or pulling Docker images.
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action#v3 # This action sets up Docker Buildx, which is an extended build tool for Docker that allows for building multi-platform images and leveraging advanced features like caching and parallel builds.
+        uses: docker/setup-buildx-action@v3 # This action sets up Docker Buildx, which is an extended build tool for Docker that allows for building multi-platform images and leveraging advanced features like caching and parallel builds.
 
       - name: Extract Docker Metadata
         id: meta
