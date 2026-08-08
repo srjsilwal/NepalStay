@@ -22,22 +22,22 @@ resource "aws_eks_cluster" "this" {
 }
 
 # EKS add-ons
-resource "aws_eks_addon" "vpc_cni"{
-  cluster_name = aws_eks_cluster.this.name
-  addon_name = "vpc-cni"
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name                = aws_eks_cluster.this.name
+  addon_name                  = "vpc-cni"
   resolve_conflicts_on_update = "OVERWRITE"
 
 }
 
 resource "aws_eks_addon" "coredns" {
-  cluster_name = aws_eks_cluster.this.name
-  addon_name = "coredns"
+  cluster_name                = aws_eks_cluster.this.name
+  addon_name                  = "coredns"
   resolve_conflicts_on_update = "OVERWRITE"
 }
 
 resource "aws_eks_addon" "kube_proxy" {
   cluster_name = aws_eks_cluster.this.name
-  addon_name = "kube_proxy"
+  addon_name   = "kube_proxy"
 
   resolve_conflicts_on_update = "OVERWRITE"
 }
@@ -51,29 +51,29 @@ resource "aws_eks_addon" "pod_identity" {
 
 # Managed Node Group
 resource "aws_eks_node_group" "this" {
-    cluster_name = aws_eks_cluster.this.name
-    node_group_name = "${var.cluster_name}-nodes"
+  cluster_name    = aws_eks_cluster.this.name
+  node_group_name = "${var.cluster_name}-nodes"
 
-    node_role_arn = var.node_role_arn
-    subnet_ids = var.subnet_ids
+  node_role_arn = var.node_role_arn
+  subnet_ids    = var.subnet_ids
 
-    capacity_type = "ON_DEMAND" # this lines means
+  capacity_type = "ON_DEMAND" # this lines means
 
-    instance_types = [
-        "t3.medium"
-    ]
+  instance_types = [
+    "t3.medium"
+  ]
 
-    scaling_config {
-      desired_size = 2
-      min_size = 1
-      max_size = 3
-    }
+  scaling_config {
+    desired_size = 2
+    min_size     = 1
+    max_size     = 3
+  }
 
-    update_config {
-        max_unavailable = 1
-    }
+  update_config {
+    max_unavailable = 1
+  }
 
-    depends_on = [
-        aws_eks_cluster.this
-    ]
+  depends_on = [
+    aws_eks_cluster.this
+  ]
 }

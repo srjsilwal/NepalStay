@@ -4,19 +4,19 @@ variable "cluster_name" {
 }
 
 variable "cluster_version" {
-    type        = string
-    description = "The Kubernetes version for the EKS cluster."
-    default = "1.36"
+  type        = string
+  description = "The Kubernetes version for the EKS cluster."
+  default     = "1.36"
 }
 
 variable "subnet_ids" {
-    type = list(string)
+  type = list(string)
 }
 
 variable "cluster_role_arn" {
-    type = string
+  type = string
 }
 
 variable "node_role_arn" {
-    type = string
+  type = string
 }

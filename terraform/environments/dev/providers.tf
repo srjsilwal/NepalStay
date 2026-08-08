@@ -1,11 +1,11 @@
 terraform {
   required_version = ">= 1.6.0"
   backend "s3" {
-    bucket = "nepalstay-terraform-state"
-    key = "nepalstay/dev/terraform.tfstate"
-    region = "us-east-1"
+    bucket       = "nepalstay-terraform-state"
+    key          = "nepalstay/dev/terraform.tfstate"
+    region       = "us-east-1"
     use_lockfile = true
-    encrypt = true
+    encrypt      = true
   }
   required_providers {
     aws = {

@@ -1,7 +1,7 @@
 variable "name" {
   description = "The name of the IAM resource."
   type        = string
-  
+
 }
 
 variable "github_repository" {

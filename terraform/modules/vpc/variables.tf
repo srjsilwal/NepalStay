@@ -8,7 +8,7 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "availability_zones"  {
+variable "availability_zones" {
   description = "Availability zones to use for the subnets"
   type        = list(string)
 }
