@@ -123,6 +123,27 @@ resource "aws_iam_role_policy" "github_ecr" {
       {
         Effect = "Allow"
         Action = [
+          "s3:GetBucketLocation",
+          "s3:GetBucketVersioning",
+          "s3:ListBucket"
+        ]
+        Resource = "arn:aws:s3:::nepalstay-terraform-state"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Resource = [
+          "arn:aws:s3:::nepalstay-terraform-state/nepalstay/dev/terraform.tfstate",
+          "arn:aws:s3:::nepalstay-terraform-state/nepalstay/dev/terraform.tfstate.tflock"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "ecr:GetAuthorizationToken"
         ]
         Resource = "*"
