@@ -30,7 +30,6 @@ module "iam" {
   name               = "nepalstay-dev"
   github_repository  = "srjsilwal/NepalStay"
   ecr_repository_arn = module.ecr.repository_arn
-  github_branch      = "main"
 }
 
 module "eks" {

@@ -9,9 +9,9 @@ variable "github_repository" {
   type        = string
 }
 
-variable "github_branch" {
-  type = string
-}
+# variable "github_branch" {
+#   type = string
+# }
 
 variable "ecr_repository_arn" {
   description = "ARN of the NepalStay ECR repository"

@@ -81,6 +81,15 @@ resource "aws_iam_role" "github_actions" {
           }
           StringLike = {
             "token.actions.githubusercontent.com:sub" = [
+              # Immutable format (repos created/renamed after July 15, 2026)
+              # Structure: repo:OWNER@OWNER_ID/REPO@REPO_ID:ref:refs/heads/BRANCH
+              "repo:${split("/", var.github_repository)[0]}@*/${split("/", var.github_repository)[1]}@*:ref:refs/heads/main",
+              "repo:${split("/", var.github_repository)[0]}@*/${split("/", var.github_repository)[1]}@*:ref:refs/heads/develop",
+              "repo:${split("/", var.github_repository)[0]}@*/${split("/", var.github_repository)[1]}@*:ref:refs/heads/feature/*",
+              "repo:${split("/", var.github_repository)[0]}@*/${split("/", var.github_repository)[1]}@*:pull_request",
+
+              # Legacy format (older / unopted-in repos)
+              # Structure: repo:OWNER/REPO:ref:refs/heads/BRANCH
               "repo:${var.github_repository}:ref:refs/heads/main",
               "repo:${var.github_repository}:ref:refs/heads/develop",
               "repo:${var.github_repository}:ref:refs/heads/feature/*",
@@ -88,10 +97,21 @@ resource "aws_iam_role" "github_actions" {
             ]
           }
         }
+      },
+      {
+        # Required because aws-actions/configure-aws-credentials@v6 sends
+        # role session tags by default — without this, STS rejects the
+        # whole AssumeRoleWithWebIdentity call, not just the tagging part.
+        Effect = "Allow"
+        Action = "sts:TagSession"
+        Principal = {
+          Federated = data.aws_iam_openid_connect_provider.github.arn
+        }
       }
     ]
   })
 }
+
 # GitHub role ECR permissions
 resource "aws_iam_role_policy" "github_ecr" {
   name = "${var.name}-github-ecr"
