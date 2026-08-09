@@ -12,7 +12,7 @@ resource "aws_ecr_repository" "this" {
 # Harden ECR
 resource "aws_ecr_lifecycle_policy" "this" {
   repository = aws_ecr_repository.this.name
-  
+
   # Ensure the JSON is valid by explicitly typing numbers
   policy = jsonencode({
     rules = [
@@ -22,7 +22,7 @@ resource "aws_ecr_lifecycle_policy" "this" {
         selection = {
           tagStatus   = "any" # Valid values: "tagged", "untagged", "any"
           countType   = "imageCountMoreThan"
-          countNumber = 20    # Ensure this is a NUMBER, not "20"
+          countNumber = 20 # Ensure this is a NUMBER, not "20"
         }
         action = {
           type = "expire"
@@ -30,5 +30,5 @@ resource "aws_ecr_lifecycle_policy" "this" {
       }
     ]
   })
-}   
+}
 
