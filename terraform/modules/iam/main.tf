@@ -76,14 +76,8 @@ resource "aws_iam_role" "github_actions" {
             "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
           }
           StringLike = {
-            "token.actions.githubusercontent.com:sub" = [
-              # Pattern 1: NEW Immutable Format (repos created after July 15, 2026)
-              # Structure: repo:OWNER@OWNER_ID/REPO@REPO_ID:ref:refs/heads/BRANCH
-              "repo:${split("/", var.github_repository)[0]}@*/${split("/", var.github_repository)[1]}@*:ref:refs/heads/${var.github_branch}",
-              # Pattern 2: LEGACY Format (older repos)
-              # Structure: repo:OWNER/REPO:ref:refs/heads/BRANCH
-              "repo:${var.github_repository}:ref:refs/heads/${var.github_branch}"
-            ]
+           # Allows ANY branch or tag for this repo (Fixes the immediate auth error)
+            "token.actions.githubusercontent.com:sub" = "repo:${var.github_repository}:*"
           }
         }
       }

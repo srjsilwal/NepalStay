@@ -31,17 +31,18 @@ jobs:
             - name: Terraform Format
               run: terraform fmt -check -recursive ../../
 
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                role-session-name: terraform-${{ github.run_id }}
+                aws-region: us-east-1
+
             - name: Terraform Init
               run: terraform init
 
             - name: Terraform Validate
               run: terraform validate
-
-            - name: Configure AWS Credentials
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-               role-to-assume: ${{secrets.AWS_ROLE_ARN}}
-               aws-region: us-east-1
 
             - name: Terraform Plan
               run: terraform plan
