@@ -25,6 +25,7 @@ jobs:
         with:
           role-to-assume: ${{secrets.AWS_ROLE_ARN}}
           aws-region: us-east-1
+          role-skip-session-tagging: true
 
       - name: Login to Amazon ECR
         id: login-ecr # This step logs in to Amazon Elastic Container Registry (ECR) using the AWS credentials configured in the previous step. It allows the workflow to authenticate with ECR and perform actions like pushing or pulling Docker images.

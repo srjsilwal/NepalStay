@@ -37,6 +37,7 @@ jobs:
                 role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
                 role-session-name: terraform-${{ github.run_id }}
                 aws-region: us-east-1
+                role-skip-session-tagging: true
 
             - name: Terraform Init
               run: terraform init
