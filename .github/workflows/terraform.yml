@@ -46,10 +46,10 @@ jobs:
                 role-skip-session-tagging: true
 
             - name: Terraform Init
-              run: terraform init -lock-timeout=5m
+              run: terraform init -input=false -lock-timeout=5m
 
             - name: Terraform Validate
-              run: terraform validate
+              run: terraform validate -no-color
 
             - name: Terraform Plan
-              run: terraform plan -lock-timeout=5m
+              run: terraform plan -input=false -lock-timeout=5m
