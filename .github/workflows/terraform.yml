@@ -14,6 +14,10 @@ permissions:
     contents: read
     id-token: write
 
+concurrency:
+    group: terraform-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     terraform:
         runs-on: ubuntu-latest
@@ -40,10 +44,10 @@ jobs:
                 role-skip-session-tagging: true
 
             - name: Terraform Init
-              run: terraform init
+              run: terraform init -lock-timeout=5m
 
             - name: Terraform Validate
               run: terraform validate
 
             - name: Terraform Plan
-              run: terraform plan
+              run: terraform plan -lock-timeout=5m

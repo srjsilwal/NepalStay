@@ -38,7 +38,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6 # This action extracts metadata for Docker images, such as tags and labels, based on the context of the repository and the current Git state. It helps in generating consistent and meaningful metadata for the built images.
         with:
-          images: ${{steps.login-ecr.outputs.registry}}/${{vars.ECR_REPOSITORY}} # This specifies the target image name for the Docker image being built. It uses the output from the previous login step to get the ECR registry URL and combines it with a repository name defined in the workflow variables (ECR_REPOSITORY). This ensures that the built image is tagged correctly for pushing to the specified ECR repository.
+          images: ${{ steps.login-ecr.outputs.registry }}/nepalstay # This matches the ECR repository Terraform creates in terraform/environments/dev.
           tags: |
             type=ref,event=branch
             type=ref,event=pr
