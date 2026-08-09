@@ -35,13 +35,6 @@ resource "aws_eks_addon" "coredns" {
   resolve_conflicts_on_update = "OVERWRITE"
 }
 
-resource "aws_eks_addon" "kube_proxy" {
-  cluster_name = aws_eks_cluster.this.name
-  addon_name   = "kube_proxy"
-
-  resolve_conflicts_on_update = "OVERWRITE"
-}
-
 resource "aws_eks_addon" "pod_identity" {
   cluster_name = aws_eks_cluster.this.name
   addon_name   = "eks-pod-identity-agent"
