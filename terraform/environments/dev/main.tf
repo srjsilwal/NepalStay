@@ -43,4 +43,3 @@ module "eks" {
   node_role_arn    = module.iam.node_role_arn
 }
 
-
