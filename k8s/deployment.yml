@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nepalstay
+  namespace: nepalstay
+  labels:
+    app: nepalstay
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nepalstay
+  template:
+    metadata:
+      labels:
+        app: nepalstay
+    spec:
+      serviceAccountName: nepalstay
+      containers:
+        - name: nepalstay
+          image: nepalstay-ecr/nepalstay:imagetag
+          ports:
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: nepalstay-config
+
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: nepalstay-secrets
+                  key: DATABASE_URL
+
+            - name: DIRECT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: nepalstay-secrets
+                  key: DIRECT_URL
+
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: nepalstay-secrets
+                  key: NEXTAUTH_SECRET
+
+            - name: NEXTAUTH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: nepalstay-secrets
+                  key: NEXTAUTH_URL
+
+            - name: UPLOADTHING_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: nepalstay-secrets
+                  key: UPLOADTHING_TOKEN
+
+            - name: KHALTI_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nepalstay-secrets
+                  key: KHALTI_SECRET_KEY
+
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nepalstay-secrets
+                  key: STRIPE_SECRET_KEY
+
+            - name: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nepalstay-secrets
+                  key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nepalstay-secrets
+                  key: GROQ_API_KEY
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "100m"
+              memory: "1Gi"
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
