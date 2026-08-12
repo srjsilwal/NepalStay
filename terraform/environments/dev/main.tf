@@ -36,7 +36,7 @@ module "eks" {
   source = "../../modules/eks"
 
   cluster_name    = "nepalstay-dev"
-  cluster_version = "1.33"
+  cluster_version = "1.35"
   subnet_ids      = module.vpc.private_subnet_ids
 
   cluster_role_arn = module.iam.cluster_role_arn
