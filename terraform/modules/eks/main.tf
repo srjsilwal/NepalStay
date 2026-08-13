@@ -22,25 +22,25 @@ resource "aws_eks_cluster" "this" {
 }
 
 # EKS add-ons
-resource "aws_eks_addon" "vpc_cni" {
-  cluster_name                = aws_eks_cluster.this.name
-  addon_name                  = "vpc-cni"
-  resolve_conflicts_on_update = "OVERWRITE"
+# resource "aws_eks_addon" "vpc_cni" {
+#   cluster_name                = aws_eks_cluster.this.name
+#   addon_name                  = "vpc-cni"
+#   resolve_conflicts_on_update = "OVERWRITE"
 
-}
+# }
 
-resource "aws_eks_addon" "coredns" {
-  cluster_name                = aws_eks_cluster.this.name
-  addon_name                  = "coredns"
-  resolve_conflicts_on_update = "OVERWRITE"
-}
+# resource "aws_eks_addon" "coredns" {
+#   cluster_name                = aws_eks_cluster.this.name
+#   addon_name                  = "coredns"
+#   resolve_conflicts_on_update = "OVERWRITE"
+# }
 
-resource "aws_eks_addon" "pod_identity" {
-  cluster_name = aws_eks_cluster.this.name
-  addon_name   = "eks-pod-identity-agent"
+# resource "aws_eks_addon" "pod_identity" {
+#   cluster_name = aws_eks_cluster.this.name
+#   addon_name   = "eks-pod-identity-agent"
 
-  resolve_conflicts_on_update = "OVERWRITE"
-}
+#   resolve_conflicts_on_update = "OVERWRITE"
+# }
 
 # Managed Node Group
 resource "aws_eks_node_group" "this" {
