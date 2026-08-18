@@ -1,0 +1,12 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nepalstay
+  namespace: {{ .Release.Namespace }}
+
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: nepalstay
+  unhealthyPodEvictionPolicy: AlwaysAllow

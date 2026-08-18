@@ -2,7 +2,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: nepalstay
-  namespace: nepalstay
+  namespace: {{ .Release.Namespace }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -13,16 +13,24 @@ spec:
 
   behavior:
     scaleUp:
-      stabilizationWindowSeconds: 0
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 60
     scaleDown:
       stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 25
+          periodSeconds: 60
   metrics:
     - type: Resource
       resource:
-         name: cpu
-         target:
-           type: Utilization
-           averageUtilization: 70
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
     - type: Resource
       resource:
         name: memory

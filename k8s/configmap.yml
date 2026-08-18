@@ -1,9 +1,0 @@
-# things that are not secrets or sensitive data goes here
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: nepalstay-config
-  namespace: nepalstay
-data:
-  NODE_ENV: "production"

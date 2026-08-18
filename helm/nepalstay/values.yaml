@@ -1,0 +1,29 @@
+namespace:
+  create: false
+
+image:
+  repository: 289050430809.dkr.ecr.us-east-1.amazonaws.com/nepalstay
+  tag: sha-079dd13
+  pullPolicy: IfNotPresent
+
+service:
+  port: 3000
+
+ingress:
+  enabled: true
+  className: alb
+  host: nepalstay.com
+  healthcheckPath: /
+
+secretStore:
+  name: nepalstay-aws
+  region: us-east-1
+
+externalSecret:
+  name: nepalstay-env
+  targetSecretName: nepalstay-secrets
+  remoteKey: nepalstay/prod/app
+
+configMap:
+  name: nepalstay-config
+  nodeEnv: production

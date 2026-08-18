@@ -181,4 +181,42 @@ resource "aws_iam_role_policy_attachment" "github_ecr_readonly" {
 }
 
 
+resource "aws_iam_role" "external_secrets" {
+  name = "NepalStayExternalSecretsRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "pods.eks.amazonaws.com"
+        }
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "external_secrets_secretsmanager" {
+  name = "external-secrets-secretsmanager"
+  role = aws_iam_role.external_secrets.name
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = "arn:aws:secretsmanager:us-east-1:289050430809:secret:nepalstay/prod/app"
+      }
+    ]
+  })
+}
+
+
 

@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: nepalstay
-  labels:
-    app.kubernetes.io/name: nepalstay
-    app.kubernetes.io/part-of: nepalstay
-    environment: production

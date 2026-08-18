@@ -3,9 +3,9 @@ resource "aws_eks_cluster" "this" {
   role_arn = var.cluster_role_arn
   version  = var.cluster_version
 
-  # access_config {
-  #   authentication_mode = "API_AND_CONFIG_MAP" # modern way to grant IAM identities access to the kubernetes API.
-  # }
+  access_config {
+    authentication_mode = "API_AND_CONFIG_MAP" # modern way to grant IAM identities access to the kubernetes API.
+  }
 
   vpc_config {
     subnet_ids = var.subnet_ids
@@ -22,25 +22,25 @@ resource "aws_eks_cluster" "this" {
 }
 
 # EKS add-ons
-# resource "aws_eks_addon" "vpc_cni" {
-#   cluster_name                = aws_eks_cluster.this.name
-#   addon_name                  = "vpc-cni"
-#   resolve_conflicts_on_update = "OVERWRITE"
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name                = aws_eks_cluster.this.name
+  addon_name                  = "vpc-cni"
+  resolve_conflicts_on_update = "OVERWRITE"
 
-# }
+}
 
-# resource "aws_eks_addon" "coredns" {
-#   cluster_name                = aws_eks_cluster.this.name
-#   addon_name                  = "coredns"
-#   resolve_conflicts_on_update = "OVERWRITE"
-# }
+resource "aws_eks_addon" "coredns" {
+  cluster_name                = aws_eks_cluster.this.name
+  addon_name                  = "coredns"
+  resolve_conflicts_on_update = "OVERWRITE"
+}
 
-# resource "aws_eks_addon" "pod_identity" {
-#   cluster_name = aws_eks_cluster.this.name
-#   addon_name   = "eks-pod-identity-agent"
+resource "aws_eks_addon" "pod_identity" {
+  cluster_name = aws_eks_cluster.this.name
+  addon_name   = "eks-pod-identity-agent"
 
-#   resolve_conflicts_on_update = "OVERWRITE"
-# }
+  resolve_conflicts_on_update = "OVERWRITE"
+}
 
 # Managed Node Group
 resource "aws_eks_node_group" "this" {

@@ -2,16 +2,15 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nepalstay
-  namespace: nepalstay
+  namespace: {{ .Release.Namespace }}
   labels:
     app: nepalstay
 
 spec:
   selector:
-    app: nepalstay  # this selector matches the pod labels: app: nepalstay
+    app: nepalstay
   ports:
     - name: http
-      port: 80
+      port: {{ .Values.service.port }}
       targetPort: http
   type: ClusterIP
-      
