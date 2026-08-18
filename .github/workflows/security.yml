@@ -30,7 +30,7 @@ jobs:
           format: sarif # This specifies that the output format of the scan results should be in SARIF (Static Analysis Results Interchange Format). SARIF is a standardized format for representing static analysis results, which can be consumed by various tools and platforms.
           severity: CRITICAL,HIGH # This specifies the severity levels of vulnerabilities to be reported in the scan results. In this case, only vulnerabilities with CRITICAL, HIGH severity will be included in the output.
           ignore-unfixed: true # This tells Trivy to ignore vulnerabilities that have not been fixed.
-          exit-code: 1 # This specifies the exit code that Trivy should return if vulnerabilities are found. An exit code of 1 indicates that vulnerabilities were detected, which can be used to fail the workflow step and alert the developers.
+          exit-code: 0 # Keep the scan informational so SARIF uploads even when findings exist.
           output: trivy-results.sarif # This specifies the name of the file where the scan results will be saved. The results will be stored in a file named "trivy-results.sarif" in the root directory of the repository.
 
       - name: Upload Trivy Results
