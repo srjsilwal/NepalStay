@@ -86,6 +86,7 @@ resource "aws_iam_role" "github_actions" {
               "repo:${split("/", var.github_repository)[0]}@*/${split("/", var.github_repository)[1]}@*:ref:refs/heads/main",
               "repo:${split("/", var.github_repository)[0]}@*/${split("/", var.github_repository)[1]}@*:ref:refs/heads/develop",
               "repo:${split("/", var.github_repository)[0]}@*/${split("/", var.github_repository)[1]}@*:ref:refs/heads/feature/*",
+              "repo:${split("/", var.github_repository)[0]}@*/${split("/", var.github_repository)[1]}@*:ref:refs/heads/hotfix/*",
               "repo:${split("/", var.github_repository)[0]}@*/${split("/", var.github_repository)[1]}@*:pull_request",
 
               # Legacy format (older / unopted-in repos)
@@ -93,6 +94,7 @@ resource "aws_iam_role" "github_actions" {
               "repo:${var.github_repository}:ref:refs/heads/main",
               "repo:${var.github_repository}:ref:refs/heads/develop",
               "repo:${var.github_repository}:ref:refs/heads/feature/*",
+              "repo:${var.github_repository}:ref:refs/heads/hotfix/*",
               "repo:${var.github_repository}:pull_request"
             ]
           }
