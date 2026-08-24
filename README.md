@@ -1,634 +1,219 @@
-# NepalStay — Online Hotel Booking System# NepalStay — Online Hotel Booking Portal
+# NepalStay
 
+NepalStay is a full-stack hotel booking platform for Nepal, built with Next.js, Prisma, PostgreSQL, and a Kubernetes-first delivery pipeline.
 
+It is designed with two audiences in mind:
 
-> An innovative hotel booking platform designed for both small and large hotels across Nepal.  **BSc CSIT 7th Semester Project**
+- Developers: a modern app-router codebase with auth, bookings, rooms, reviews, complaints, payments, and Prisma-backed data access.
+- DevOps: containerized delivery, Helm packaging, Argo CD GitOps, and GitHub Actions for CI, Docker image publishing, and security scanning.
 
-> **BSc CSIT 7th Semester Project** | Tribhuvan University · Bhairahawa Multiple CampusTribhuvan University · Bhairahawa Multiple Campus
+## What The App Does
 
+- Public hotel search and hotel detail pages
+- Customer bookings, wishlist, complaints, and profile management
+- Vendor dashboard for hotel, room, invoice, analytics, and review workflows
+- Staff operations for room management and PMS-style workflows
+- Admin workflows for hotels, users, bookings, refunds, reviews, and FNMIS-related tasks
+- Payment support for Khalti, Stripe, and cash
+- Image uploads through UploadThing
+- Compliance-oriented booking data for foreign guest tracking
 
+## Tech Stack
 
----A full-stack hotel booking marketplace built for Nepal's hospitality market.
+- Frontend: Next.js 16, React 18, TypeScript, Tailwind CSS
+- State/data: TanStack React Query
+- Forms and validation: React Hook Form, Zod
+- Auth: NextAuth.js
+- Database: PostgreSQL with Prisma
+- Payments: Khalti and Stripe
+- Maps: Leaflet and react-leaflet
+- File uploads: UploadThing
+- Observability: Sentry dependency present in the app
 
-Search, compare, and book hotels across Kathmandu, Pokhara, Chitwan, and beyond.
+## Repository Layout
 
-## 🚀 Quick Start
+- `app/` - Next.js App Router pages and API routes
+- `components/` - Shared UI components
+- `lib/` - App helpers and utilities
+- `prisma/` - Prisma schema and seed data
+- `helm/nepalstay/` - Helm chart for Kubernetes deployment
+- `argocd/nepalstay.yml` - Argo CD Application manifest
+- `.github/workflows/` - CI, Docker, and security automation
+- `docs/` - Supporting documentation
 
-Live demo: [nepal-stay.vercel.app](https://nepal-stay.vercel.app)
+## Development Setup
 
 ### Prerequisites
 
-- Node.js 18+ and npm---
+- Node.js 22+ recommended
+- npm
+- PostgreSQL
 
-- PostgreSQL database
-
-- Environment variables configured (.env.local)## Tech Stack
-
-
-
-### Installation & Setup| Layer | Technology |
-
-|---|---|
-
-```bash| Framework | Next.js 14 (App Router) |
-
-# 1. Install dependencies| Language | TypeScript 5.5 (strict) |
-
-npm install| Styling | Tailwind CSS 3.4.10 |
-
-| Auth | NextAuth v4 (JWT) |
-
-# 2. Set up environment variables| ORM | Prisma 5.17 |
-
-cp .env.example .env.local| Database | PostgreSQL |
-
-# Edit .env.local with your database and API keys| Payments | Khalti ePayment API |
-
-| File Uploads | UploadThing v7 |
-
-# 3. Apply database migrations| Maps | Leaflet + react-leaflet |
-
-npm run db:push| Password | bcrypt (12 rounds) |
-
-
-
-# 4. Seed demo data---
-
-npm run db:seed
-
-## Quick Start
-
-# 5. Start development server
-
-npm run dev### 1. Clone and install
-
-``````bash
-
-git clone <your-repo>
-
-The application will be available at `http://localhost:3000`cd nepalstay
-
-npm install
-
----```
-
-
-
-## 📊 Demo Credentials### 2. Environment variables
+### Install
 
 ```bash
-
-### Admin Panelcp .env.example .env
-
-- **Email:** admin@nepalstay.com```
-
-- **Password:** admin123
-
-- **URL:** /adminFill in `.env`:
-
-```env
-
-### Vendor (Small Hotel)DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5432/nepalstay"
-
-- **Email:** rajesh@urbanboutique.comNEXTAUTH_SECRET="run: openssl rand -base64 32"
-
-- **Password:** password123NEXTAUTH_URL="http://localhost:3000"
-
-- **Hotel:** Urban Kathmandu Boutique (8 rooms)UPLOADTHING_TOKEN="get from uploadthing.com dashboard"
-
-- **URL:** /vendorKHALTI_SECRET_KEY="test_secret_key_xxxxx  (from Khalti merchant dashboard)"
-
+npm install
 ```
 
-### Vendor (Large Hotel)
-
-- **Email:** sita@mountainlodge.com### 3. Database setup
-
-- **Password:** password123```bash
-
-- **Hotel:** Pokhara Mountain Lodge (32 rooms)npx prisma db push
-
-- **URL:** /vendornpm run db:seed
-
-```
-
-### Customer
-
-- **Email:** traveler@example.com### 4. Run development server
-
-- **Password:** password123```bash
-
-- **URL:** /customernpm run dev
-
-```
-
-### Staff
-
-- **Email:** maya@mountainlodge.com (Large Hotel)Open [http://localhost:3000](http://localhost:3000)
-
-- **Password:** password123
-
-- **URL:** /staff---
-
-
-
----## Demo Credentials
-
-
-
-## 🏗️ Architecture Highlights| Role | Email | Password |
-
-|---|---|---|
-
-### Key Features| Admin | admin@nepalstay.com | admin123 |
-
-✅ **Nationality-Based User Profiles** — Set once at registration, never changes  | Vendor | vendor1@nepalstay.com | password123 |
-
-✅ **Unique Room Numbers** — Every room has a unique ID (101, G05, 301, etc.)  | Vendor 2 | vendor2@nepalstay.com | password123 |
-
-✅ **Unique Room Names** — No duplicate names per hotel  | Staff | staff@nepalstay.com | password123 |
-
-✅ **Small & Large Hotel Support** — Small hotels don't need staff management  | Customer | customer@nepalstay.com | password123 |
-
-✅ **Staff Auto-Enablement** — Staff features unlock at 12+ rooms  
-
-✅ **Complete Data Isolation** — Vendors only see their own hotel  ---
-
-✅ **FNMIS Compliance** — Foreign guest tracking for government compliance  
-
-✅ **Payment Integration** — Khalti, Stripe, and Cash payment options  ## User Roles
-
-
-
-### Tech Stack### Customer
-
-- Search and filter hotels by city, type, stars, price
-
-| Layer | Technology |- View hotel detail with image gallery, Leaflet map, reviews
-
-|-------|------------|- Book rooms with BS (Bikram Sambat) or AD calendar
-
-| **Frontend** | Next.js 14, React 18, Tailwind CSS |- Pay via Khalti digital wallet or cash on arrival
-
-| **Backend** | Next.js API Routes, Node.js |- Manage bookings, cancel with automatic refund policy
-
-| **Database** | PostgreSQL with Prisma ORM |- Write verified reviews (only after checkout)
-
-| **Authentication** | NextAuth.js |- Save hotels to wishlist
-
-| **State Management** | TanStack React Query |
-
-| **Form Validation** | React Hook Form + Zod |### Vendor
-
-| **File Upload** | UploadThing |- Create hotel listing (submitted for admin approval)
-
-| **Payments** | Stripe + Khalti |- Manage rooms: add, edit, toggle active/inactive
-
-- Confirm, check-in, check-out guests
-
----- View revenue dashboard with monthly growth
-
-- Read guest reviews
-
-## 📁 Project Structure
-
-### Staff
-
-```- View and update room status for assigned hotel
-
-nepalstay/- Optimistic UI updates (instant, no wait for API)
-
-├── app/                          # Next.js app directory- Today's check-in list filtered by current date
-
-│   ├── (auth)/                   # Authentication pages- Check In / Check Out directly from arrivals table
-
-│   ├── api/                      # API endpoints
-
-│   ├── admin/                    # Admin dashboard### Admin
-
-│   ├── vendor/                   # Vendor dashboard- Approve / reject / suspend hotel listings
-
-│   ├── staff/                    # Staff dashboard- Manage all user accounts and roles
-
-│   └── customer/                 # Customer dashboard- FNMIS compliance dashboard (24-hour foreign guest reporting)
-
-├── components/                   # React components- IRD audit report for any date range (BS + AD dates)
-
-├── lib/                          # Utilities & helpers- Review moderation (hide/show)
-
-├── prisma/                       # Database schema & seed- Process manual refunds
-
-└── public/                       # Static assets
-
-```---
-
-
-
----## Key Features
-
-
-
-## 🛏️ Hotels & Rooms### Bikram Sambat (BS) Calendar
-
-- Full BS ↔ AD converter covering 2070–2095 BS
-
-### Hotel 1: Urban Kathmandu Boutique (Small)- Custom NepaliDatePicker component
-
-- **Location:** Kathmandu, Thamel- Toggle persisted to localStorage — survives page refresh
-
-- **Rooms:** 8 (unique names & numbers)- All dates in FNMIS and audit reports show both BS and AD
-
-- **Floors:** 2
-
-- **Staff Enabled:** No (small hotel)### FNMIS Compliance
-
-- **Features:** Rooftop garden, restaurant, parking- 24-hour reporting deadline auto-set for foreign guests
-
-- Admin dashboard with PENDING / OVERDUE / REPORTED tabs
-
-**Room Details:**- Hourly cron endpoint: `GET /api/cron/fnmis-check`
-
-```- Set `CRON_SECRET` env var and call this hourly via uptime robot or Vercel cron
-
-Floor 1:
-
-  - 101: City View Single (1 bed, ₹3,500/night)### Khalti Payment
-
-  - 102: City View Double (2 beds, ₹6,500/night)- Step-based flow: Initiate → Khalti tab → "I've Completed Payment" → Verify
-
-  - 103: Twin Beds Superior (2 beds, ₹5,500/night)- `bookingId` embedded in `return_url` (works across tabs)
-
-  - 104: Deluxe Family Room (3 beds, ₹8,500/night)- Idempotent verify — double-calls return existing invoice
-
-
-
-Floor 2:### IRD-Compliant Invoices
-
-  - 201: Mountain View Single (1 bed, ₹4,200/night)- Format: `INV-XXXXXXXX-NNNNNN`
-
-  - 202: Himalayan View Deluxe (2 beds, ₹9,500/night)- Credit notes: `CN-INV-XXXXXXXX-NNNNNN`
-
-  - 203: Romantic Suite (2 beds, ₹12,000/night)- Cancellation policy: >7 days = 100%, 3–7 days = 50%, <3 days = 0%
-
-  - 204: Penthouse with Terrace (4 beds, ₹15,000/night)
-
-```### Booking Conflict Prevention
-
-- PostgreSQL SERIALIZABLE transaction
-
-### Hotel 2: Pokhara Mountain Lodge (Large)- Conflict check + INSERT are atomic — race conditions impossible
-
-- **Location:** Pokhara, Lakeside
-
-- **Rooms:** 32 (unique names & numbers)### Content-Based Hotel Recommendations
-
-- **Floors:** 4 (Basement + 3 levels)- Cosine similarity on feature vectors (star rating, price, city, type, amenities)
-
-- **Staff Enabled:** Yes- Top-6 similar hotels shown on every hotel detail page
-
-- **Features:** Lake view, restaurant, spa, conference room
-
----
-
-**Room Distribution:**
-
-```## Project Structure
-
-Basement (Budget):
-
-  - 8 economy rooms (dorms, singles, doubles)```
-
-  nepalstay/
-
-Floor 1 (Standard):├── app/
-
-  - 8 standard rooms with lake views│   ├── (auth)/          # Login, Register
-
-  │   ├── hotels/          # Public hotel search + detail
-
-Floor 2 (Premium):│   ├── customer/        # Customer bookings, wishlist, profile
-
-  - 8 premium suites and deluxe rooms│   ├── vendor/          # Vendor dashboard, hotel, rooms, bookings
-
-  │   ├── staff/           # Staff operations panel
-
-Floor 3 (Executive):│   ├── admin/           # Admin dashboard, hotels, users, FNMIS, audit
-
-  - 8 penthouse and executive rooms│   ├── payment/         # Khalti return page
-
-```│   └── api/             # All API routes (29 total)
-
-├── components/
-
----│   ├── providers/       # SessionProvider, CalendarContext, ToastContext
-
-│   ├── Navbar.tsx       # 4-role responsive navbar
-
-## 🔐 User Roles & Permissions│   ├── BookingModal.tsx # Full booking flow with BS picker + Khalti
-
-│   ├── HotelMap.tsx     # Leaflet map (dynamic import, no SSR)
-
-### 1. Customer│   ├── NepaliDatePicker.tsx
-
-- Browse and search hotels│   ├── BsDateDisplay.tsx
-
-- Make bookings│   ├── KhaltiButton.tsx
-
-- Pay via Khalti/Stripe/Cash│   └── AvatarUploader.tsx
-
-- Write reviews├── lib/
-
-- Manage wishlist│   ├── auth.ts          # NextAuth config
-
-- Track loyalty points│   ├── prisma.ts        # Singleton client
-
-│   ├── booking.ts       # Conflict detection, pricing, cancellation policy
-
-### 2. Vendor│   ├── nepali-date.ts   # BS/AD converter
-
-- Manage one hotel│   ├── recommendation.ts # Cosine similarity algorithm
-
-- Set room prices│   └── uploadthing.ts
-
-- View bookings└── prisma/
-
-- Generate invoices    ├── schema.prisma    # 8 models, fully indexed
-
-- View analytics    └── seed.ts          # 5 users, 3 Nepal hotels, 8 room types
-
-- Upload hotel images```
-
-
-
-**Note:** Vendor can see ONLY their hotel data---
-
-
-
-### 3. Staff## Available Scripts
-
-- Available only for hotels with 12+ rooms
-
-- Manage room status (cleaning, maintenance)```bash
-
-- Process check-ins/check-outsnpm run dev          # Start development server
-
-- View guest infonpm run build        # Production build
-
-- Can see only assigned hotelnpm run start        # Start production server
-
-npm run lint         # ESLint check
-
-### 4. Adminnpm run db:push      # Push schema to database
-
-- Approve/reject hotel applicationsnpm run db:migrate   # Create migration
-
-- Suspend problematic hotelsnpm run db:studio    # Open Prisma Studio
-
-- View all bookings system-widenpm run db:seed      # Seed demo data
-
-- View all users```
-
-- Generate reports
-
-- Full system access---
-
-
-
----## Seed Data
-
-
-
-## 📱 FeaturesAfter `npm run db:seed`:
-
-
-
-### Customer Features- **Himalayan Heritage Hotel** — Kathmandu, 4★ (lat: 27.7172, lng: 85.3240)
-
-- Hotel search with filters (city, price, rating)- **Lakeside Serenity Resort** — Pokhara, 4★ Resort (lat: 28.2096, lng: 83.9856)
-
-- Advanced availability calendar- **Chitwan Jungle Lodge** — Chitwan, 3★ Lodge (lat: 27.5799, lng: 84.4985)
-
-- Room comparison
-
-- Secure booking8 room types across these hotels with realistic NPR pricing.
-
-- Multiple payment options
-
-- Loyalty program---
-
-- Review system
-
-- Wishlist management## Production Deployment
-
-
-
-### Vendor Features1. **Database**: Supabase (free tier) or Render PostgreSQL
-
-- Hotel listing & management2. **App**: Vercel — connect GitHub repo, add env vars
-
-- Room inventory3. **FNMIS cron**: Add to `vercel.json`:
-
-- Booking management```json
-
-- Revenue analytics{
-
-- Guest management  "crons": [{
-
-- PMS (Property Management System)    "path": "/api/cron/fnmis-check",
-
-    "schedule": "0 * * * *"
-
-### Staff Features  }]
-
-- Room status management}
-
-- Check-in/check-out process```
-
-- Guest communication4. Add `CRON_SECRET` to env vars and Vercel cron header config
-
-- Maintenance tracking
-
----
-
-### Admin Features
-
-- Hotel approval workflow*Built with ❤️ for Nepal's tourism sector*
-
-- User management
-- Booking audits
-- Financial reports
-- System analytics
-- Compliance tracking
-
----
-
-## 🌍 Foreign Tourist Features
-
-Foreign nationals have special handling:
-
-1. **At Signup:**
-   - Select "Foreign Tourist" nationality
-   - Provide passport number
-   - Select purpose of visit
-
-2. **Booking:**
-   - Can book any available room
-   - May have different pricing
-   - Data tracked for FNMIS compliance
-
-3. **After Checkout:**
-   - Hotel staff reports to government
-   - Automatic compliance tracking
-   - 48-hour deadline for FNMIS report
-
----
-
-## 💳 Payment Integration
-
-### Supported Methods
-- **Khalti** — Mobile payment (Nepal)
-- **Stripe** — International credit/debit cards
-- **Cash** — Pay at hotel
-
-### Payment Flow
-1. Customer adds items to cart
-2. Selects payment method
-3. Completes payment
-4. Booking confirmed
-5. Invoice generated
-
----
-
-## 🔒 Security
-
-### Authentication
-- NextAuth.js with JWT
-- Bcrypt password hashing (12 rounds)
-- Session timeout: 24 hours
-- CSRF protection
-
-### Authorization
-- Role-based access control (RBAC)
-- Row-level security at API level
-- Vendors can only access own hotel
-- Staff can only access assigned hotel
-
-### Data Validation
-- Zod schema validation
-- Input sanitization
-- SQL injection prevention (Prisma ORM)
-- XSS protection via React
-
----
-
-## 🚀 Deployment
+`postinstall` automatically runs `prisma generate`, so Prisma Client is ready after dependencies install.
 
 ### Environment Variables
+
+Create a `.env.local` file and provide the values your local setup needs:
+
 ```env
-# Database
 DATABASE_URL=postgresql://...
 DIRECT_URL=postgresql://...
-
-# Authentication
 NEXTAUTH_SECRET=your-secret-key
-NEXTAUTH_URL=https://yourdomain.com
-
-# Payment Gateways
-KHALTI_SECRET_KEY=your-khalti-key
-STRIPE_SECRET_KEY=your-stripe-key
-STRIPE_PUBLIC_KEY=your-stripe-public
-
-# File Upload
-UPLOADTHING_SECRET=your-uploadthing-secret
-
-# Third-party APIs
-SENTRY_DSN=optional-sentry-url
+NEXTAUTH_URL=http://localhost:3000
+UPLOADTHING_TOKEN=your-uploadthing-token
+KHALTI_SECRET_KEY=your-khalti-secret
+STRIPE_SECRET_KEY=your-stripe-secret
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
+GROQ_API_KEY=your-groq-api-key
 ```
 
-### Deploy to Vercel
-```bash
-npm i -g vercel
-vercel
-```
-
----
-
-## 📖 Full Documentation
-
-For detailed architecture and implementation guide, see [ARCHITECTURE.md](./ARCHITECTURE.md)
-
-This comprehensive guide includes:
-- Complete data model documentation
-- All API endpoints
-- User roles and permissions
-- Security implementation
-- Deployment checklist
-- Troubleshooting guide
-
----
-
-## 🐛 Common Issues
-
-### Issue: Rooms not showing
-- **Solution:** Ensure `npm run db:seed` was executed
-- Check room `isActive` flag is `true`
-
-### Issue: Vendor can see other hotels
-- **Solution:** This is a security bug! Check vendor API uses `vendorId: session.user.id`
-
-### Issue: Staff features not working
-- **Solution:** Only enabled for hotels with 12+ rooms
-- Check `hotel.staffEnabled` flag
-- Verify `hotel.hotelSize` is MEDIUM or LARGE
-
-### Issue: Foreign guest FNMIS not reporting
-- **Solution:** Check `booking.fnmisOverdue` flag
-- Verify staff has access to guest information
-
----
-
-## 📊 Available Scripts
+### Database
 
 ```bash
-# Development
-npm run dev              # Start dev server
-npm run build            # Build for production
-npm start                # Start production server
-npm run lint             # Run ESLint
-
-# Database
-npm run db:push          # Apply schema changes
-npm run db:seed          # Seed demo data
-npm run db:studio        # Open Prisma Studio
-
-# Testing
-npm run test             # Run Jest tests
-npm run test:watch       # Watch mode
-npm run test:coverage    # Coverage report
+npm run db:push
+npm run db:seed
 ```
 
----
+Use `db:push` for schema syncing during local development and `db:seed` for demo records.
 
-## 📞 Support
+### Run Locally
 
-- **Issue Tracker:** GitHub Issues
-- **Documentation:** [ARCHITECTURE.md](./ARCHITECTURE.md)
-- **Email:** support@nepalstay.com
+```bash
+npm run dev
+```
 
----
+Open `http://localhost:3000`.
 
-## 📄 License
+## Available Scripts
 
-This project is part of BSc CSIT curriculum at Tribhuvan University.
+```bash
+npm run dev           # Start the Next.js dev server
+npm run build         # Build for production
+npm run start         # Start the production server
+npm run lint         # Run ESLint
+npm run typecheck     # TypeScript check without emitting files
+npm run test          # Run Jest
+npm run test:watch    # Run Jest in watch mode
+npm run test:coverage # Run Jest coverage
+npm run db:push       # Push Prisma schema changes
+npm run db:migrate    # Create and apply a Prisma migration
+npm run db:studio     # Open Prisma Studio
+npm run db:seed       # Seed demo data
+```
 
----
+## Development View
 
-## 👨‍💻 Contributors
+This repo is organized around the App Router, with separate areas for:
 
-- **Developer:** [Your Name]
-- **Institution:** Tribhuvan University, Bhairahawa Multiple Campus
-- **Year:** 2026
+- Public browsing and hotel discovery
+- Customer booking and post-booking actions
+- Vendor hotel management
+- Staff room operations
+- Admin oversight and reporting
+- API routes under `app/api/`
 
----
+Useful routes and capabilities include:
 
-**Last Updated:** May 18, 2026
+- `app/hotels` for listing and hotel detail flows
+- `app/customer` for guest-facing workflows
+- `app/vendor` for hotel owner workflows
+- `app/staff` for on-site operational workflows
+- `app/admin` for platform administration
+- `app/api/health` and `app/api/ready` for service checks
+
+The Prisma schema includes core entities such as users, hotels, rooms, bookings, reviews, complaints, wishlist items, and room status logs.
+
+## DevOps View
+
+### Docker and Image Delivery
+
+- The image is built through `.github/workflows/docker.yml`
+- The workflow tags the image and updates `helm/nepalstay/values.yaml`
+- The image is intended for Amazon ECR
+
+### Kubernetes Packaging
+
+- The app is packaged as a Helm chart in `helm/nepalstay/`
+- Chart defaults include:
+  - Deployment on port `3000`
+  - `ClusterIP` service
+  - ALB ingress
+  - External Secrets integration
+  - Readiness and liveness probes
+  - Resource requests and limits
+
+### GitOps
+
+- `argocd/nepalstay.yml` defines the Argo CD Application
+- The application points at `helm/nepalstay`
+- Sync is automated with `prune` and `selfHeal`
+- Namespace creation is enabled through `CreateNamespace=true`
+
+### GitHub Actions
+
+- `ci.yml`
+  - Lints, type checks, tests, and builds the application
+- `docker.yml`
+  - Builds and pushes the container image
+  - Updates the Helm values image tag on main
+- `security.yml`
+  - Runs Trivy, Gitleaks, SBOM generation, and CodeQL
+
+## Deployment Flow
+
+1. Push code to `main` or `develop`
+2. CI validates the app with lint, tests, typecheck, and build
+3. Docker workflow builds and pushes the image
+4. Helm values are updated with the new image tag
+5. Argo CD syncs the cluster state from the Git repository
+
+## Kubernetes Notes
+
+The Helm chart expects:
+
+- A PostgreSQL database reachable from the app
+- Secret data for app runtime configuration
+- External Secrets support for `nepalstay-secrets`
+- An ALB ingress controller if you want the ingress resources to become public
+
+If you want a quick explanation of the chart structure, see `docs/kubernetes-helm-explained.md`.
+
+## Troubleshooting
+
+- `helm lint helm/nepalstay`
+  - Make sure the chart files are named `Chart.yaml` and `values.yaml`
+- `argocd app get nepalstay`
+  - Make sure you are logged into the Argo CD CLI with a server address
+- Missing rooms, bookings, or demo data
+  - Run `npm run db:seed`
+- Build or Prisma errors
+  - Verify `DATABASE_URL` and `DIRECT_URL`
+- Login or auth issues
+  - Verify `NEXTAUTH_SECRET` and `NEXTAUTH_URL`
+
+## Security And Quality
+
+The repository includes automated scanning for:
+
+- Secrets
+- Dependency vulnerabilities
+- SBOM generation
+- Static analysis with CodeQL
+
+This is meant to catch common release and supply-chain issues before deployment.
+
+## License
+
+This project is part of the BSc CSIT curriculum at Tribhuvan University.
+
+## Notes
+
+- The repo is intended to be deployed through GitOps rather than manual Kubernetes edits.
+- The current production image tag is managed through `helm/nepalstay/values.yaml`.
+- The app uses role-based access patterns for customer, vendor, staff, and admin flows.
