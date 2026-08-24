@@ -57,14 +57,14 @@ jobs:
           cache-from: type=gha # This specifies the cache source for the Docker build process. It uses GitHub Actions (GHA) as the cache source, which allows for caching previously built layers of the Docker image. This can speed up subsequent builds by reusing cached layers instead of rebuilding them from scratch.
           cache-to: type=gha,mode=max # This specifies the cache destination for the Docker build process. It uses GitHub Actions (GHA) as the cache destination and sets the mode to "max," which means that the build process will store the maximum amount of cache possible. This helps in optimizing future builds by providing a more extensive cache for reuse.
       - name: Update GitOps Image Tag
-        if: github.event_name == 'push' && github.ref == 'refs/head/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           IMAGE_TAG: sha-${{github.sha}}
         run: |
           sed -i "s/^  tag:.*/  tag: \"${IMAGE_TAG}\"/" helm/nepalstay/values.yaml
 
       - name: Commit Gitops Change
-        if: github.event_name == 'push' && github.ref == 'refs/head/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
             IMAGE_TAG: sha-${{github.sha}}
 
