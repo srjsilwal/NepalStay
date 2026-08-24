@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: nepalstay
+  namespace: argocd
+spec:
+  # The project the application belongs to.
+  project: default
+
+  # Source of the application manifests
+  source:
+    repoURL: https://github.com/srjsilwal/NepalStay # Can point to either a Helm chart repo or a git repo.
+    targetRevision: main
+    path: helm/nepalstay
+    helm:
+      releaseName: nepalstay
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nepalstay
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true
