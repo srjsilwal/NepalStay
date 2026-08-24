@@ -19,7 +19,9 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Run Trivy Filesystem Scan
         id: trivy-scan
@@ -47,10 +49,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This environment variable provides the GitHub token to the Gitleaks action, allowing it to authenticate with the GitHub API and access the repository for scanning.
 
@@ -62,7 +66,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Generate SBOM
         uses: aquasecurity/trivy-action@v0.36.0
@@ -89,7 +93,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4

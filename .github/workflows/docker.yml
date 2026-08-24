@@ -4,13 +4,15 @@ on:
     branches:
       - main
       - develop
+    paths-ignore:
+      - "helm/nepalstay/values.yaml"
   pull_request:
     branches:
       - main
       - develop
 permissions:
   id-token: write # This permission allows the workflow to generate an OpenID Connect (OIDC) token, which can be used for authentication with cloud providers and other services that support OIDC. It is often used for securely accessing resources without needing to store long-lived credentials in the repository.
-  contents: read # This permission allows the workflow to read the contents of the repository, including files and directories. It is necessary for actions that need to access the codebase, such as checking out the repository or reading configuration files.
+  contents: write # This permission allows the workflow to read the contents of the repository, including files and directories. It is necessary for actions that need to access the codebase, such as checking out the repository or reading configuration files. write allows to push the change in the repo
 
 jobs:
   docker:
@@ -42,7 +44,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=sha
+            type=sha,prefix=sha-
 
       - name: Build Docker Image
         uses: docker/build-push-action@v7 # This action builds and pushes Docker images using the Docker Buildx tool. It allows for building images from a Dockerfile and optionally pushing them to a container registry.
@@ -54,3 +56,22 @@ jobs:
           labels: ${{steps.meta.outputs.labels}} # This specifies the labels that will be applied to the built Docker image. It uses the output from the "Extract Docker Metadata" step, which generates labels based on the repository's metadata and Git state. Labels provide additional information about the image, such as version, build date, and other relevant metadata.
           cache-from: type=gha # This specifies the cache source for the Docker build process. It uses GitHub Actions (GHA) as the cache source, which allows for caching previously built layers of the Docker image. This can speed up subsequent builds by reusing cached layers instead of rebuilding them from scratch.
           cache-to: type=gha,mode=max # This specifies the cache destination for the Docker build process. It uses GitHub Actions (GHA) as the cache destination and sets the mode to "max," which means that the build process will store the maximum amount of cache possible. This helps in optimizing future builds by providing a more extensive cache for reuse.
+      - name: Update GitOps Image Tag
+        if: github.event_name == 'push' && github.ref == 'refs/head/main'
+        env:
+          IMAGE_TAG: sha-${{github.sha}}
+        run: |
+          sed -i "s/^  tag:.*/  tag: \"${IMAGE_TAG}\"/" helm/nepalstay/values.yaml
+
+      - name: Commit Gitops Change
+        if: github.event_name == 'push' && github.ref == 'refs/head/main'
+        env:
+            IMAGE_TAG: sha-${{github.sha}}
+
+        run: | 
+            git config --global user.email "s6007118@gmail.com"
+            git config --global user.name  "srjsilwal"
+            git add "helm/nepalstay/values.yaml"
+            git diff --cached --quiet && exit 0
+            git commit -m  "chore:(deploy) update image tage with ${IMAGE_TAG}"
+            git push
