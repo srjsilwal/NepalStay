@@ -4,12 +4,14 @@ on:
     branches:
       - main
       - develop
+      - "hotfix/**"
     paths-ignore:
       - "helm/nepalstay/values.yaml"
   pull_request:
     branches:
       - main
       - develop
+      - "hotfix/**"
 permissions:
   id-token: write # This permission allows the workflow to generate an OpenID Connect (OIDC) token, which can be used for authentication with cloud providers and other services that support OIDC. It is often used for securely accessing resources without needing to store long-lived credentials in the repository.
   contents: write # This permission allows the workflow to read the contents of the repository, including files and directories. It is necessary for actions that need to access the codebase, such as checking out the repository or reading configuration files. write allows to push the change in the repo
@@ -67,9 +69,9 @@ jobs:
 
       - name: Create GitOps Pull Request
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
           branch: chore/update-image-tag-${{ github.sha }}
           commit-message: "chore(deploy): update image tag to sha-${{ github.sha }}"
           title: "chore(deploy): update image tag to sha-${{ github.sha }}"
