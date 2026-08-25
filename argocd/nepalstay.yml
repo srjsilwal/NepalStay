@@ -10,7 +10,7 @@ spec:
 
   # Source of the application manifests
   source:
-    repoURL: https://github.com/srjsilwal/NepalStay # Can point to either a Helm chart repo or a git repo.
+    repoURL: https://github.com/srjsilwal/NepalStay
     targetRevision: main
     path: helm/nepalstay
     helm:
