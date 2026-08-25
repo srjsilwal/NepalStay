@@ -12,7 +12,8 @@ service:
 ingress:
   enabled: true
   className: alb
-  host: nepalstay.com
+  host: ""
+  certificateArn: ""
   healthcheckPath: /
 
 secretStore:
