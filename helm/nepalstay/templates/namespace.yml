@@ -1,4 +1,5 @@
 
+{{- if .Values.namespace.create }}
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -10,4 +11,4 @@ metadata:
     app.kubernetes.io/name: nepalstay
     app.kubernetes.io/part-of: nepalstay
     environment: production
-
+{{- end }}
