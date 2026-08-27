@@ -46,7 +46,7 @@ Please generate a concise executive summary (2-3 sentences) highlighting key ins
         "Authorization": `Bearer ${groqKey}`,
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: process.env.GROQ_MODEL || "groq/compound-mini",
         messages: [
           {
             role: "system",

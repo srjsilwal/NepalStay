@@ -180,7 +180,7 @@ If no hotels were found, suggest the user refine their search or try different f
         "Authorization": `Bearer ${groqKey}`,
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: process.env.GROQ_MODEL || "groq/compound-mini",
         max_tokens: 500,
         temperature: 0.7,
         messages: [
