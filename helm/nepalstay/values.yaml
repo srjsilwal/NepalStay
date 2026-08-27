@@ -3,7 +3,7 @@ namespace:
 
 image:
   repository: 289050430809.dkr.ecr.us-east-1.amazonaws.com/nepalstay
-  tag: "sha-bd6c60f"
+  tag: "sha-b2f9185"
   pullPolicy: IfNotPresent
 
 service:
