@@ -53,4 +53,5 @@ Thumbs.db
 .vscode/
 .idea/
 
+docs/
 nepalstay-secrets.json
