@@ -9,13 +9,14 @@ interface Props {
   bookingId: string;
   amount: number;
   onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
 const SK_PIDX = "khalti_pidx";
 const SK_URL  = "khalti_payment_url";
 const SK_BID  = "khalti_bookingId";
 
-export default function KhaltiButton({ bookingId, amount, onSuccess }: Props) {
+export default function KhaltiButton({ bookingId, amount, onSuccess, onCancel }: Props) {
   const { success: toastSuccess, error: toastError } = useToast();
   const [step, setStep]             = useState<Step>("idle");
   const [pidx, setPidx]             = useState("");
@@ -105,6 +106,22 @@ export default function KhaltiButton({ bookingId, amount, onSuccess }: Props) {
     }
   };
 
+  const handleCancelBooking = async () => {
+    try {
+      await fetch(`/api/bookings/${bookingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "CANCELLED" }),
+      });
+    } catch {}
+    sessionStorage.removeItem(SK_PIDX);
+    sessionStorage.removeItem(SK_URL);
+    sessionStorage.removeItem(SK_BID);
+    setStep("idle");
+    setErrMsg("");
+    onCancel?.();
+  };
+
   if (step === "done") {
     return (
       <div className="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm font-medium justify-center">
@@ -145,10 +162,16 @@ export default function KhaltiButton({ bookingId, amount, onSuccess }: Props) {
     return (
       <div className="space-y-2">
         <p className="text-xs text-red-600 text-center">{errMsg}</p>
-        <button onClick={() => { setStep("idle"); setErrMsg(""); }}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-sm hover:bg-slate-50">
-          <RefreshCw className="w-3.5 h-3.5" />Try Again
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => { setStep("idle"); setErrMsg(""); }}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-slate-200 text-slate-600 rounded-xl text-sm hover:bg-slate-50">
+            <RefreshCw className="w-3.5 h-3.5" />Try Again
+          </button>
+          <button onClick={handleCancelBooking}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-xl text-sm hover:bg-red-50">
+            Cancel Booking
+          </button>
+        </div>
       </div>
     );
   }

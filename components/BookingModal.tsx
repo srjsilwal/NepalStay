@@ -164,12 +164,28 @@ export default function BookingModal({ room, hotel, onClose, onSuccess }: Props)
     setSuccess(true);
   };
 
+  const handleClose = async () => {
+    // If a draft booking was created in this modal but user closes without completing payment or selecting cash-on-arrival
+    if (success && bookingId) {
+      try {
+        await fetch(`/api/bookings/${bookingId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "CANCELLED" }),
+        });
+      } catch (err) {
+        console.error("Failed to cancel abandoned draft booking", err);
+      }
+    }
+    onClose();
+  };
+
   const inputCls = "w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500";
 
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto"
@@ -213,7 +229,7 @@ export default function BookingModal({ room, hotel, onClose, onSuccess }: Props)
               </span>
             </button>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               aria-label="Close"
               className="text-slate-400 hover:text-slate-600 p-1"
             >
@@ -244,6 +260,7 @@ export default function BookingModal({ room, hotel, onClose, onSuccess }: Props)
                     bookingId={bookingId}
                     amount={finalPrice}
                     onSuccess={onSuccess}
+                    onCancel={onClose}
                   />
                 )}
 
